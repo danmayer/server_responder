@@ -1,5 +1,5 @@
 get '/' do
-  "I am alive"
+  "I am alive:\n #{`churn`}"
 end
 
 post '/' do
