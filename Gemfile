@@ -1,6 +1,7 @@
 source :rubygems
 gem 'rake'
 gem 'sinatra'
+gem 'churn'
 
 # Prevent installation on Heroku with
 # heroku config:add BUNDLE_WITHOUT="development:test"

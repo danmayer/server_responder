@@ -1,8 +1,15 @@
+set :public_folder, File.dirname(__FILE__) + '/public'
+
+@@last_push = nil
+
 get '/' do
-  "I am alive:\n #{`churn`}"
+  @results = `churn`
+  @last_push = @@last_push
+  erb :index
 end
 
 post '/' do
-  push = params
-  "I got some JSON: #{push.inspect}"
+  @push = params
+  @@last_push = @push
+  erb :index_push
 end
