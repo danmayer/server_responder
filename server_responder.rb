@@ -6,7 +6,7 @@ tmp_file = "tmp/last_request.txt"
 
 get '/' do
   @results = `churn`
-  @last_push = File.read(tmp_file)
+  @last_push = File.read(tmp_file) if File.exists?(tmp_file)
   erb :index
 end
 
