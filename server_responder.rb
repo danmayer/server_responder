@@ -4,7 +4,7 @@ set :public_folder, File.dirname(__FILE__) + '/public'
 
 tmp_file = "tmp/last_request.txt"
 tmp_results = "tmp/results.txt"
-local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects"
+local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 
 get '/' do
   @results = File.read(tmp_results) if File.exists?(tmp_results)
