@@ -19,7 +19,7 @@ post '/' do
   repo_name = JSON.parse(params['payload'])['repository']['name'] rescue nil
   logger.info("repo_url: #{repo_url}")
   if repo_url && repo_name
-    repo_location = "#{local_repos}#{local_repos}"
+    repo_location = "#{local_repos}#{repo_name}"
     if File.exists?(repo_location)
       logger.info("update repo")
       `cd #{repo_location}; git pull`
