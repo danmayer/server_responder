@@ -1,4 +1,7 @@
 require 'json'
+require 'fog'
+require './lib/server-files'
+include ServerFiles
 
 set :public_folder, File.dirname(__FILE__) + '/public'
 
@@ -13,11 +16,14 @@ get '/' do
 end
 
 post '/' do
-  @push = params
-  File.open(tmp_file, 'w') {|f| f.write(@push.to_json) }
-  repo_url = JSON.parse(params['payload'])['repository']['url'] rescue nil
-  repo_name = JSON.parse(params['payload'])['repository']['name'] rescue nil
+  File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
+  push = JSON.parse(params['payload'])
+  repo_url = push['repository']['url'] rescue nil
+  repo_name = push['repository']['name'] rescue nil
+  user = push['repository']['owner']['name'] rescue nil
+  project_key = "#{user}/#{repo_name}"
   logger.info("repo_url: #{repo_url}")
+
   if repo_url && repo_name
     repo_location = "#{local_repos}#{repo_name}"
     if File.exists?(repo_location)
@@ -28,6 +34,7 @@ post '/' do
       `cd #{local_repos}; git clone #{repo_url}`
     end
     results = `cd #{repo_location}; churn`
+    write_file(project_key,results)
     File.open(tmp_results, 'w') {|f| f.write(results) }
   end
   erb :index_push
