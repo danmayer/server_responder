@@ -6,3 +6,6 @@ __To Run Locally__
 
 __Data Recieved__
   example push data: https://help.github.com/articles/post-receive-hooks
+
+__TODO__
+  * a way to protect environment variables needed for S3 or a safe way to have one user drop to another which writes to S3
