@@ -21,7 +21,9 @@ post '/' do
   repo_url = push['repository']['url'] rescue nil
   repo_name = push['repository']['name'] rescue nil
   user = push['repository']['owner']['name'] rescue nil
-  project_key = "#{user}/#{repo_name}"
+  after_commit = push['after']
+  project_key  = "#{user}/#{repo_name}"
+  commit_key   = "#{project_key}/#{after_commit}"
   logger.info("repo_url: #{repo_url}")
 
   if repo_url && repo_name
@@ -34,7 +36,10 @@ post '/' do
       `cd #{local_repos}; git clone #{repo_url}`
     end
     results = `cd #{repo_location}; churn`
-    write_file(project_key,results)
+
+    write_file(commit_key,results)
+    write_commits(project_key, after_commit, commit_key)
+
     File.open(tmp_results, 'w') {|f| f.write(results) }
   end
   erb :index_push
