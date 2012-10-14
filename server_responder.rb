@@ -25,6 +25,15 @@ else
     erb :index
   end
 
+  get '/last_job' do
+    last_job_time = if File.exists?(tmp_file)
+      File.mtime(tmp_file)
+    else
+      Time.now
+    end
+    {:last_time => last_job_time}.to_json
+  end
+
   post '/' do
     File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
     push = JSON.parse(params['payload'])
