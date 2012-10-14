@@ -15,3 +15,4 @@ __TODO__
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
   * Server responder should know how to first setup a EC2 server if loaded on a blank image
   * user environments or other way to secure between runs (different servers per users?) 
+  * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simpler and dumb
