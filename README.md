@@ -12,4 +12,5 @@ __TODO__
   * a way to protect environment variables needed for S3 or a safe way to have one user drop to another which writes to S3  
   * user environments or other way to secure between runs (different servers per users?)   
   * a way to setup required environment like DB, memcache, redis, etc (follow travis CIs lead)  
-  * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?  
+  * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
+  * Server responder should know how to first setup a EC2 server if loaded on a blank image
