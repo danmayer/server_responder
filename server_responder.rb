@@ -54,7 +54,13 @@ else
         logger.info("create repo")
         `cd #{local_repos}; git clone #{repo_url}`
       end
-      results = `cd #{repo_location}; churn`
+      deferred_server_config = "#{repo_location}/.deferred_server"
+      if File.exists?(deferred_server_config)
+        cmd = File.read(deferred_server_config)
+        results = `cd #{repo_location}; #{cmd}`
+      else
+        results = `cd #{repo_location}; churn`
+      end
 
       write_file(commit_key,results)
       write_commits(project_key, after_commit, commit_key)
