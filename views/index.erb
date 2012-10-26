@@ -1,12 +1,20 @@
 Server is alive.
 
+<h3>last results</h3>
 <pre>
 <%= @results %>
 </pre>
 
-last push:
+<h3>last push</h3>
 <pre>
 <%= @last_push %>
+</pre>
+
+<h3>debug info</h3>
+<pre>
+whoami: <%= `whoami` %>
+printenv:
+<%= `printenv`.gsub(/^(AMAZON_ACCESS_KEY_ID|AMAZON_SECRET_ACCESS_KEY|EC2_).*/,'') %>
 </pre>
 
 done.

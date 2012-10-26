@@ -57,7 +57,16 @@ else
       deferred_server_config = "#{repo_location}/.deferred_server"
       if File.exists?(deferred_server_config)
         cmd = File.read(deferred_server_config)
-        results = `cd #{repo_location}; #{cmd}`
+        results = nil
+        Dir.chdir(repo_location) do
+          results = `cd #{repo_location}`
+          logger.info "chdir: #{results}"
+          results = `pwd`
+          logger.info "pwd: #{results}"
+          full_cmd = "cd #{repo_location} && #{cmd}"
+          logger.info "dir: #{repo_location} && running: #{full_cmd}"
+          results = `#{full_cmd}`
+        end
       else
         results = `cd #{repo_location}; churn`
       end
