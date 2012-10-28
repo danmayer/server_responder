@@ -16,6 +16,7 @@ __TODO__
   * user environments or other way to secure between runs (different servers per users?) 
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simpler and dumb
   * config files that can sepcific additional features to run after the default of pushing the results to S3, something like push this whole folder as run artifacts
+  * accept only https connections require api token before doing anything
   
 __Completed__
 

@@ -34,9 +34,7 @@ else
     {:last_time => last_job_time}.to_json
   end
 
-  post '/' do
-    File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
-    push = JSON.parse(params['payload'])
+  def github_hook_commit(push)
     repo_url = push['repository']['url'] rescue nil
     repo_name = push['repository']['name'] rescue nil
     user = push['repository']['owner']['name'] rescue nil
@@ -73,9 +71,37 @@ else
 
       write_file(commit_key,results)
       write_commits(project_key, after_commit, commit_key)
+    end
+    results
+  end
+
+  def script_payload(push)
+    script_payload = push['script_payload']
+    results_location = push['results_location']
+    if script_payload && results_location
+      script_payload = script_payload.gsub("\"","\\\"")
+      logger.info "running: #{script_payload}"
+      results = `ruby -e "#{script_payload}"`
+      write_file(results_location,results)
+      results
+    end
+  end
+
+  post '/' do
+    if params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY']
+      File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
+      push = JSON.parse(params['payload'])
+
+      results = if push['script_payload']
+                  script_payload(push)
+                else
+                  github_hook_commit(push)
+                end
 
       File.open(tmp_results, 'w') {|f| f.write(results) }
+      erb :index_push
+    else
+      "bad api key"
     end
-    erb :index_push
   end
 end
