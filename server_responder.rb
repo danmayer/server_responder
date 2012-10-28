@@ -101,6 +101,7 @@ else
       File.open(tmp_results, 'w') {|f| f.write(results) }
       erb :index_push
     else
+      logger.error "received a invalid request"
       "bad api key"
     end
   end
