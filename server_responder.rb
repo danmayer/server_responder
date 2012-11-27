@@ -9,10 +9,22 @@ tmp_file = "tmp/last_request.txt"
 tmp_results = "tmp/results.txt"
 local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 
+  def upload_files(results_location)
+    artifact_files = Dir.glob("./artifacts/*")
+    puts artifact_files.inspect
+    if artifact_files.length > 0
+      write_file(results_location+'_artifact_files',artifact_files.map{|f| 'https://s3.amazonaws.com/deferred-server/'+results_location+'_artifact_files_'+f.to_s.gsub('/','_')}.to_json)
+      artifact_files.each do |file|
+        write_file(results_location+'_artifact_files_'+file.to_s.gsub('/','_'), File.read(file))
+      end
+    end
+  end
+
 # Run me with 'ruby' and I run as a script
 if $0 =~ /#{File.basename(__FILE__)}$/
   puts "running as local script"
 
+  #upload_files('batman')
   stop_server
 
   puts "done"
@@ -83,6 +95,7 @@ else
       logger.info "running: #{script_payload}"
       results = `ruby -e "#{script_payload}"`
       write_file(results_location,results)
+      upload_files(results_location)
       results
     end
   end

@@ -1,4 +1,6 @@
-__Server Responder__  
+Server Responder
+===  
+
 An app that runs various commands when asked. It can be spun up on EC2 servers on demand pushes results to S3 and shuts itself back down. Currently to shut down, it writes a file of the last job time and exposes that time as a api endpoint. Then a cron running on the deffered-server frontend polls that endpoint and after not seeing any work done for awhile asks the server_responder app to shut down.
 
 __To Run Locally__  
@@ -17,6 +19,7 @@ __TODO__
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simpler and dumb
   * config files that can sepcific additional features to run after the default of pushing the results to S3, something like push this whole folder as run artifacts
   * accept only https connections require api token before doing anything
+  * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   
 __Completed__
 
