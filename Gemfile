@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'churn'
 gem 'json'
 gem 'fog'
+gem 'mocha'
 
 # Prevent installation on Heroku with
 # heroku config:add BUNDLE_WITHOUT="development:test"

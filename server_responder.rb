@@ -30,6 +30,7 @@ if $0 =~ /#{File.basename(__FILE__)}$/
   puts "done"
 else
   set :public_folder, File.dirname(__FILE__) + '/public'
+  set :root, File.dirname(__FILE__)
 
   get '/' do
     @results = File.read(tmp_results) if File.exists?(tmp_results)
@@ -102,17 +103,21 @@ else
 
   post '/' do
     if params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY']
-      File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
-      push = JSON.parse(params['payload'])
+      begin
+        File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
+        push = JSON.parse(params['payload'])
+        results = if push['script_payload']
+                    script_payload(push)
+                  else
+                    github_hook_commit(push)
+                  end
 
-      results = if push['script_payload']
-                  script_payload(push)
-                else
-                  github_hook_commit(push)
-                end
-
-      File.open(tmp_results, 'w') {|f| f.write(results) }
-      erb :index_push
+        File.open(tmp_results, 'w') {|f| f.write(results) }
+        erb :index_push
+      rescue => error
+        logger.error "hit post error #{error.inspect}\n #{error.backtrace}"
+        raise error
+      end
     else
       logger.error "received a invalid request"
       "bad api key"
