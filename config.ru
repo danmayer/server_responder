@@ -1,8 +1,9 @@
 require 'sinatra'
 require './server_responder'
 
-log = File.new("log/sinatra.log", "a+")
-STDOUT.reopen(log)
-STDERR.reopen(log)
+# This breaks the new passenger setup find new logging option
+# log = File.new("log/sinatra.log", "a+")
+# STDOUT.reopen(log)
+# STDERR.reopen(log)
 
 run Sinatra::Application
