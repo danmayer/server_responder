@@ -20,6 +20,11 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
     end
   end
 
+  def reset_artifacts_directory
+    FileUtils.rm_rf('./artifacts', secure => true)
+    Dir.mkdir('./artifacts')
+  end
+
 # Run me with 'ruby' and I run as a script
 if $0 =~ /#{File.basename(__FILE__)}$/
   puts "running as local script"
@@ -94,6 +99,7 @@ else
     if script_payload && results_location
       script_payload = script_payload.gsub("\"","\\\"")
       logger.info "running: #{script_payload}"
+      reset_artifacts_directory
       results = `ruby -e "#{script_payload}"`
       write_file(results_location,results)
       upload_files(results_location)

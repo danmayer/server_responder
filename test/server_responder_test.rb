@@ -25,6 +25,7 @@ class MyAppTest < Test::Unit::TestCase
 
   def test_script_payload__success
     app.any_instance.expects(:write_file).with(anything,"9\n").once
+    app.any_instance.expects(:reset_artifacts_directory).once
     app.any_instance.expects(:upload_files).once
     File.stubs(:open)
     post '/', script_payload, 'SERVER_RESPONDER_API_KEY' => ENV['SERVER_RESPONDER_API_KEY']
