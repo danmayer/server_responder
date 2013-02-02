@@ -86,6 +86,10 @@ else
       else
         results = `cd #{repo_location}; churn`
       end
+      #temporary hack for the empty results not creating files / valid output
+      if results==''
+        results = 'script completed with no output'
+      end
 
       write_file(commit_key,results)
       write_commits(project_key, after_commit, commit_key)
