@@ -21,7 +21,7 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
   end
 
   def reset_artifacts_directory
-    FileUtils.rm_rf('./artifacts', secure => true)
+    FileUtils.rm_rf('./artifacts', :secure => true)
     Dir.mkdir('./artifacts')
   end
 
