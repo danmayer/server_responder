@@ -35,7 +35,7 @@ if $0 =~ /#{File.basename(__FILE__)}$/
   puts "done"
 else
   # This breaks the new passenger setup find new logging option
-  log = File.new("log/sinatra.log", "a+")
+  #log = File.new("log/sinatra.log", "a+")
   #STDOUT.reopen(log)
   #STDERR.reopen(log)
 
