@@ -22,7 +22,7 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 
   def reset_artifacts_directory
     FileUtils.rm_rf('./artifacts', :secure => true)
-    Dir.mkdir('./artifacts')
+    Dir.mkdir('./artifacts') unless File.exists?('./artifacts')
   end
 
 # Run me with 'ruby' and I run as a script
