@@ -36,8 +36,8 @@ if $0 =~ /#{File.basename(__FILE__)}$/
 else
   # This breaks the new passenger setup find new logging option
   log = File.new("log/sinatra.log", "a+")
-  STDOUT.reopen(log)
-  STDERR.reopen(log)
+  #STDOUT.reopen(log)
+  #STDERR.reopen(log)
 
   set :public_folder, File.dirname(__FILE__) + '/public'
   set :root, File.dirname(__FILE__)
