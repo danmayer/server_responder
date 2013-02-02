@@ -58,6 +58,7 @@ else
   end
 
   def github_hook_commit(push)
+    local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
     repo_url = push['repository']['url'] rescue nil
     repo_name = push['repository']['name'] rescue nil
     user = push['repository']['owner']['name'] rescue nil
