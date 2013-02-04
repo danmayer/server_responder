@@ -80,6 +80,7 @@ else
           logger.info "chdir: #{results}"
           results = `pwd`
           logger.info "pwd: #{results}"
+          `chmod +w Gemfile.lock`
           full_cmd = "cd #{repo_location} && BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
           results = `#{full_cmd}`
