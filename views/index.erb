@@ -14,7 +14,7 @@ Server is alive.
 <pre>
 whoami: <%= `whoami` %>
 printenv:
-<%= `printenv`.gsub(/^(AMAZON_ACCESS_KEY_ID|AMAZON_SECRET_ACCESS_KEY|EC2_).*/,'') %>
+<%= `printenv`.gsub(/^(AMAZON_ACCESS_KEY_ID|AMAZON_SECRET_ACCESS_KEY|EC2_|SERVER_RESPONDER_API_KEY).*/,'') %>
 </pre>
 
 done.

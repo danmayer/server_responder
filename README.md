@@ -21,8 +21,8 @@ __TODO__
   * accept only https connections require api token before doing anything
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   * Fix broken logging on passenger bitnami 1.9.2
-  * Fix permissions issues on creating files and directories and project all 'projects' created by daemon/daemon can't be read by process
 
 __Completed__
 
   * Allow a .deferred-server file to specify commands to run opposed to only supporting churn (churn is fallback default)
+  * Fix permissions issues on creating files and directories and project all 'projects' created by daemon/daemon can't be read by process
