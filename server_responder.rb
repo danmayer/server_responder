@@ -76,12 +76,12 @@ else
         cmd = File.read(deferred_server_config)
         results = nil
         Dir.chdir(repo_location) do
-          results = `cd #{repo_location}`
-          logger.info "chdir: #{results}"
+          #results = `cd #{repo_location}`
+          #logger.info "chdir: #{results}"
           results = `pwd`
           logger.info "pwd: #{results}"
           `chmod +w Gemfile.lock`
-          full_cmd = "cd #{repo_location} && BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
+          full_cmd = "cd #{repo_location} && BUNDLE_GEMFILE=#{repo_location}/Gemfile && gem install bundler --no-ri --no-rdoc && #{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
           results = `#{full_cmd}`
         end
@@ -92,7 +92,7 @@ else
       if results==''
         results = 'script completed with no output'
       end
-
+      puts "results: #{results}"
       write_file(commit_key,results)
       write_commits(project_key, after_commit, commit_key)
     end
