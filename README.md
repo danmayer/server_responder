@@ -21,6 +21,7 @@ __TODO__
   * accept only https connections require api token before doing anything
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   * Fix broken logging on passenger bitnami 1.9.2
+  * basic auth for / gets and https only redirects
 
 __Completed__
 

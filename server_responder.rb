@@ -76,8 +76,6 @@ else
         cmd = File.read(deferred_server_config)
         results = nil
         Dir.chdir(repo_location) do
-          #results = `cd #{repo_location}`
-          #logger.info "chdir: #{results}"
           results = `pwd`
           logger.info "pwd: #{results}"
           `chmod +w Gemfile.lock`
@@ -97,6 +95,18 @@ else
       write_commits(project_key, after_commit, commit_key)
     end
     results
+  end
+
+  def debug_env
+    puts `which ruby`
+    puts `which gem`
+    puts `gem env`
+    puts `gem list --local`
+    #puts `rvm`
+    puts `whoami`
+    puts `echo $PATH`
+    puts `which bundle`
+    puts `pwd`
   end
 
   def script_payload(push)
