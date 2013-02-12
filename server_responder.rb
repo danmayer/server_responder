@@ -1,5 +1,6 @@
 require 'json'
 require 'fog'
+require 'fileutils'
 require './lib/server-commands'
 require './lib/server-files'
 include ServerFiles
@@ -11,7 +12,7 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 
   def upload_files(results_location)
     artifact_files = Dir.glob("./artifacts/*")
-    puts artifact_files.inspect
+    puts "files uploading: #{artifact_files.inspect}"
     if artifact_files.length > 0
       write_file(results_location+'_artifact_files',artifact_files.map{|f| 'https://s3.amazonaws.com/deferred-server/'+results_location+'_artifact_files_'+f.to_s.gsub('/','_')}.to_json)
       artifact_files.each do |file|
@@ -23,6 +24,8 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
   def reset_artifacts_directory
     FileUtils.rm_rf('./artifacts', :secure => true)
     Dir.mkdir('./artifacts') unless File.exists?('./artifacts')
+    artifact_files = Dir.glob("./artifacts/*")
+    puts "files after clearing: #{artifact_files.inspect}"
   end
 
 # Run me with 'ruby' and I run as a script
@@ -114,8 +117,8 @@ else
     results_location = push['results_location']
     if script_payload && results_location
       script_payload = script_payload.gsub("\"","\\\"")
-      logger.info "running: #{script_payload}"
       reset_artifacts_directory
+      logger.info "running: #{script_payload}"
       results = `ruby -e "#{script_payload}"`
       write_file(results_location,results)
       upload_files(results_location)
