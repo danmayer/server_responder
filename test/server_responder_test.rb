@@ -1,3 +1,4 @@
+ENV['RACK_ENV'] = 'test'
 require 'sinatra'
 require 'server_responder'
 require 'test/unit'

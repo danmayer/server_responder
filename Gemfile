@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'churn'
 gem 'json'
 gem 'fog'
+gem 'rack-ssl-enforcer'
 
 
 # Prevent installation on Heroku with
