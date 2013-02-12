@@ -16,15 +16,8 @@ __TODO__
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
   * user environments or other way to secure between runs (different servers per users?)
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simpler and dumb
-  * accept only https connections require api token before doing anything
   * basic auth for '/'
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   * Fix broken logging on passenger bitnami 1.9.2
   * strip api token etc from logs
 
-__Completed__
-
-  * Allow a .deferred-server file to specify commands to run opposed to only supporting churn (churn is fallback default)
-  * Fix permissions issues on creating files and directories and project all 'projects' created by daemon/daemon can't be read by process
-  * config files that can specific additional features to run after the default of pushing the results to S3, something like push this whole folder as run artifacts
-  * Server responder should know how to first setup a EC2 server if loaded on a blank image (this actually became a part of deferred_server not server_responder)
