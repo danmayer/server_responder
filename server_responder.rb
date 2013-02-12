@@ -22,7 +22,7 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
   end
 
   def reset_artifacts_directory
-    FileUtils.rm_rf('./artifacts', :secure => true)
+    FileUtils.rm_rf('./artifacts', :secure => false)
     Dir.mkdir('./artifacts') unless File.exists?('./artifacts')
     artifact_files = Dir.glob("./artifacts/*")
     puts "files after clearing: #{artifact_files.inspect}"
