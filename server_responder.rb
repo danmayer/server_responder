@@ -38,8 +38,7 @@ if $0 =~ /#{File.basename(__FILE__)}$/
 
   puts "done"
 else
-  #removing for now seems to cause some unstability
-  #use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
+  use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
   set :public_folder, File.dirname(__FILE__) + '/public'
   set :root, File.dirname(__FILE__)
 
