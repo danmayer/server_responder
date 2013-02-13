@@ -97,7 +97,7 @@ else
       end
       puts "results: #{results}"
       write_file(commit_key,results)
-      write_commits(project_key, after_commit, commit_key)
+      write_commits(project_key, after_commit, commit_key, push)
     end
     results
   end

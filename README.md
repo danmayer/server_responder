@@ -12,7 +12,9 @@ __Data Recieved__
 __TODO__
 
   * a way to protect environment variables needed for S3 or a safe way to have one user drop to another which writes to S3 (possibly server responder is dumb and hits deferred-server to handle S3 file writes / reads)
-  * a way to setup required environment like DB, memcache, redis, etc (follow travis CIs lead)
+  * a way to setup required environment like DB, memcache, redis, etc (follow travis CIs lead?)
+    * this might go into deferred-server and might be specifying Chef scripts
+    * specify boot strap followed by chef cookbook repo?
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
   * user environments or other way to secure between runs (different servers per users?)
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simpler and dumb
