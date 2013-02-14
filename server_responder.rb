@@ -64,7 +64,7 @@ else
     end
     if File.exists?(tmp_file)
       @last_push = File.read(tmp_file)
-      @last_push = @last_push.gsub(/api_token.*:\"\w+\",/i,'api_token":"***",')
+      @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
     end
     erb :index
   end
