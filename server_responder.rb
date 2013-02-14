@@ -56,6 +56,7 @@ else
     end
   end
 
+  before { protected! if request.path_info == "/" }
 
   get '/' do
     @results = File.read(tmp_results) if File.exists?(tmp_results)
