@@ -59,7 +59,10 @@ else
   before { protected! if request.path_info == "/" }
 
   get '/' do
-    @results = File.read(tmp_results) if File.exists?(tmp_results)
+    if File.exists?(tmp_results)
+      @results = File.read(tmp_results)
+      @results.gsub(/\"api_token\":\"\w\"/,'"api_token":"*******"')
+    end
     @last_push = File.read(tmp_file) if File.exists?(tmp_file)
     erb :index
   end
