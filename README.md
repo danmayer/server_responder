@@ -16,5 +16,4 @@ __TODO__
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simply and dumb
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   * Fix broken logging on passenger bitnami 1.9.2
-  * strip api token etc from logs
 
