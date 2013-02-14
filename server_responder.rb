@@ -61,9 +61,11 @@ else
   get '/' do
     if File.exists?(tmp_results)
       @results = File.read(tmp_results)
-      @results = @results.gsub(/api_token.*:\"\w+\",/,'api_token":"*******",')
     end
-    @last_push = File.read(tmp_file) if File.exists?(tmp_file)
+    if File.exists?(tmp_file)
+      @last_push = File.read(tmp_file)
+      @last_push = @last_push.gsub(/api_token.*:\"\w+\",/i,'api_token":"***",')
+    end
     erb :index
   end
 
