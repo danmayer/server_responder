@@ -16,6 +16,7 @@ __TODO__
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simply and dumb
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
+  * return results and exit status
   
 __NOTES__
   

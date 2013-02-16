@@ -134,6 +134,11 @@ else
       reset_artifacts_directory
       logger.info "running: #{script_payload}"
       results = `ruby -e "#{script_payload}"`
+      #temporary hack for the empty results not creating files / valid output
+      if results==''
+        results = 'script completed with no output'
+      end
+      logger.info "results: #{results}"
       write_file(results_location,results)
       upload_files(results_location)
       results
