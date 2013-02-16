@@ -56,7 +56,7 @@ else
     end
   end
 
-  before { protected! if request.path_info == "/" }
+  before { protected! if request.path_info == "/" && request.request_method == "GET"}
 
   get '/' do
     if File.exists?(tmp_results)
