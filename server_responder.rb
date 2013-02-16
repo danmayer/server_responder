@@ -137,13 +137,13 @@ else
   end
 
   def script_payload(push)
-    logger.error "running script_payload"
+    logger.info "running script_payload"
     script_payload = push['script_payload']
     results_location = push['results_location']
     if script_payload && results_location
       script_payload = script_payload.gsub("\"","\\\"")
       reset_artifacts_directory
-      logger.error "running: #{script_payload}"
+      logger.info "running: #{script_payload}"
       results = `ruby -e "#{script_payload}"`
       write_file(results_location,results)
       upload_files(results_location)
