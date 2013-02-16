@@ -106,8 +106,8 @@ else
           results = `pwd`
           logger.info "pwd: #{results}"
           `chmod +w Gemfile.lock`
-          `BUNDLE_GEMFILE=#{repo_location}/Gemfile && gem install bundler --no-ri --no-rdoc`
-          full_cmd = "#{cmd}"
+          `gem install bundler --no-ri --no-rdoc`
+          full_cmd = "BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
           results = `#{full_cmd} 2>&1`
         end
