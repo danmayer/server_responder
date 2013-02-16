@@ -41,6 +41,7 @@ else
   use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
   set :public_folder, File.dirname(__FILE__) + '/public'
   set :root, File.dirname(__FILE__)
+  enable :logging
 
   helpers do
     def protected!
