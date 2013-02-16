@@ -106,9 +106,10 @@ else
           results = `pwd`
           logger.info "pwd: #{results}"
           `chmod +w Gemfile.lock`
-          full_cmd = "cd #{repo_location} && BUNDLE_GEMFILE=#{repo_location}/Gemfile && gem install bundler --no-ri --no-rdoc && #{cmd}"
+          `BUNDLE_GEMFILE=#{repo_location}/Gemfile && gem install bundler --no-ri --no-rdoc`
+          full_cmd = "#{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
-          results = `#{full_cmd}`
+          results = `#{full_cmd} 2>&1`
         end
       else
         results = `cd #{repo_location}; churn`
@@ -122,18 +123,6 @@ else
       write_commits(project_key, after_commit, commit_key, push)
     end
     results
-  end
-
-  def debug_env
-    puts `which ruby`
-    puts `which gem`
-    puts `gem env`
-    puts `gem list --local`
-    #puts `rvm`
-    puts `whoami`
-    puts `echo $PATH`
-    puts `which bundle`
-    puts `pwd`
   end
 
   def script_payload(push)
@@ -173,4 +162,19 @@ else
       "bad api key"
     end
   end
+
+  private
+
+  def debug_env
+    puts `which ruby`
+    puts `which gem`
+    puts `gem env`
+    puts `gem list --local`
+    #puts `rvm`
+    puts `whoami`
+    puts `echo $PATH`
+    puts `which bundle`
+    puts `pwd`
+  end
+
 end
