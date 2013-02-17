@@ -105,12 +105,10 @@ else
         cmd = File.read(deferred_server_config)
         results = nil
         Dir.chdir(repo_location) do
-          results = `pwd`
-          logger.info "pwd: #{results}"
           if File.exists?("#{repo_location}/Gemfile")
             `chmod +w Gemfile.lock`
             `gem install bundler --no-ri --no-rdoc`
-            `BUNDLE_GEMFILE=#{repo_location}/Gemfile bundle install`
+            `BUNDLE_GEMFILE=#{repo_location}/Gemfile && bundle install`
           end
           full_cmd = "BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
