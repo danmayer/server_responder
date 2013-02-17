@@ -107,8 +107,11 @@ else
         Dir.chdir(repo_location) do
           results = `pwd`
           logger.info "pwd: #{results}"
-          `chmod +w Gemfile.lock`
-          `gem install bundler --no-ri --no-rdoc`
+          if File.exists?("#{repo_location}/Gemfile")
+            `chmod +w Gemfile.lock`
+            `gem install bundler --no-ri --no-rdoc`
+            `BUNDLE_GEMFILE=#{repo_location}/Gemfile bundle install`
+          end
           full_cmd = "BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
           logger.info "dir: #{repo_location} && running: #{full_cmd}"
           results = `#{full_cmd} 2>&1`
@@ -121,7 +124,12 @@ else
         results = 'script completed with no output'
       end
       puts "results: #{results}"
-      write_file(commit_key,results)
+      exit_status = $?.exitstatus
+      json_results = {
+        :exit_status => exit_status,
+        :results => results
+      }
+      write_file(commit_key,json_results.to_json)
       write_commits(project_key, after_commit, commit_key, push)
     end
     RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
