@@ -101,6 +101,7 @@ else
         `cd #{local_repos}; git clone #{repo_url}`
       end
       deferred_server_config = "#{repo_location}/.deferred_server"
+      cmd = "churn"
       if File.exists?(deferred_server_config)
         cmd = File.read(deferred_server_config)
         results = nil
@@ -115,7 +116,7 @@ else
           results = `#{full_cmd} 2>&1`
         end
       else
-        results = `cd #{repo_location}; churn`
+        results = `cd #{repo_location}; #{cmd}`
       end
       #temporary hack for the empty results not creating files / valid output
       if results==''
@@ -124,13 +125,16 @@ else
       puts "results: #{results}"
       exit_status = $?.exitstatus
       json_results = {
+        :cmd_run     => cmd,
         :exit_status => exit_status,
-        :results => results
+        :results     => results
       }
       write_file(commit_key,json_results.to_json)
       write_commits(project_key, after_commit, commit_key, push)
     end
     RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
+    {:project_key => project_key, :commit_key => commit_key}
+
     results
   end
 
