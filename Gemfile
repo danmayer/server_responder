@@ -5,7 +5,7 @@ gem 'churn'
 gem 'json'
 gem 'fog'
 gem 'rack-ssl-enforcer'
-
+gem 'rest-client'
 
 # Prevent installation on Heroku with
 # heroku config:add BUNDLE_WITHOUT="development:test"

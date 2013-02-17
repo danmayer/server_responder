@@ -4,6 +4,7 @@ require 'fileutils'
 require './lib/server-commands'
 require './lib/server-files'
 require 'rack-ssl-enforcer'
+require 'rest_client'
 include ServerFiles
 include ServerCommands
 
@@ -58,7 +59,7 @@ else
     end
   end
 
-  before { protected! if request.path_info == "/" && request.request_method == "GET"}
+  before { protected! if request.path_info == "/" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
   get '/' do
     if File.exists?(tmp_results)
@@ -123,6 +124,7 @@ else
       write_file(commit_key,results)
       write_commits(project_key, after_commit, commit_key, push)
     end
+    RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
     results
   end
 
