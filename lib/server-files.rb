@@ -36,12 +36,16 @@ module ServerFiles
     write_file(project_key, @commits.to_json)
   end
 
-  def write_file(filename, body)
-    file = directory.files.new({
-                                 :key    => filename,
-                                 :body   => body,
-                                 :public => true
-                               })
+  def write_file(filename, body, options = {})
+    file_options = {
+      :key    => filename,
+      :body   => body,
+      :public => true
+    }
+    if options[:content_type]
+      file_options[:content_type] = options[:content_type]
+    end
+    file = directory.files.new(file_options)
     file.save
   end
 

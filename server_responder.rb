@@ -17,7 +17,8 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
     if artifact_files.length > 0
       write_file(results_location+'_artifact_files',artifact_files.map{|f| 'https://s3.amazonaws.com/deferred-server/'+results_location+'_artifact_files_'+f.to_s.gsub('/','_')}.to_json)
       artifact_files.each do |file|
-        write_file(results_location+'_artifact_files_'+file.to_s.gsub('/','_'), File.read(file))
+        mimetype = `file -Ib #{file}`.gsub(/\n/,"")
+        write_file(results_location+'_artifact_files_'+file.to_s.gsub('/','_'), File.read(file), :content_type => mimetype)
       end
     end
   end
