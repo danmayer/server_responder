@@ -1,12 +1,10 @@
 require 'json'
 require 'fog'
 require 'fileutils'
-require './lib/server-commands'
 require './lib/server-files'
 require 'rack-ssl-enforcer'
 require 'rest_client'
 include ServerFiles
-include ServerCommands
 
 tmp_file = "tmp/last_request.txt"
 tmp_results = "tmp/results.txt"
@@ -34,10 +32,6 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 # Run me with 'ruby' and I run as a script
 if $0 =~ /#{File.basename(__FILE__)}$/
   puts "running as local script"
-
-  #upload_files('batman')
-  stop_server
-
   puts "done"
 else
   use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'

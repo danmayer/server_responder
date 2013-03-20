@@ -4,9 +4,9 @@ Server Responder
 An app that runs various commands when asked. It can be spun up on EC2 servers on demand pushes results to S3 and shuts itself back down. Currently to shut down, it writes a file of the last job time and exposes that time as a api endpoint. Then a cron running on the deffered-server front end polls that endpoint and after not seeing any work done for awhile asks the server_responder app to shut down.
 
 __To Run Locally__  
-`bundle exec thin -R config.ru start`
+`bundle exec thin -R config.ru start` or `bundle exec rackup -p 3000`
 
-__Data Recieved__  
+__Data Received__  
   example push data:  
   https://help.github.com/articles/post-receive-hooks
 

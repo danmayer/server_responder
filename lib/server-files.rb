@@ -1,8 +1,7 @@
 module ServerFiles
 
-  # TODO abstract out this class/module
-  # this file is in both deferred-server and server-responder projects
-
+  # TODO how to allow a server to write files without exposing the shared secrets...
+  # Thinking a write ONLY ec2 key PER server
   def connection
     @connection ||= Fog::Storage.new(
                                   :provider          => 'AWS',
@@ -18,17 +17,7 @@ module ServerFiles
       ''
     end
   end
-
-  def get_projects
-    projects_data = get_file('projects_json')
-    @projects = JSON.parse(projects_data) rescue {}
-  end
-
-  def get_commits(project_key)
-    commits_data = get_file(project_key)
-    @commits = JSON.parse(commits_data) rescue {}
-  end
-
+  
   def write_commits(project_key, after_commit, commit_key, push)
     commits_data = get_file(project_key)
     @commits = JSON.parse(commits_data) rescue {}
