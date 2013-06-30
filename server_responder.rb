@@ -152,6 +152,11 @@ else
     end
   end
 
+  def project_request_payload(push)
+    logger.info "running project_request_payload"
+    "complete"
+  end
+
   post '/' do
     if params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY']
       begin
@@ -159,6 +164,8 @@ else
         push = JSON.parse(params['payload'])
         results = if push['script_payload']
                     script_payload(push)
+                  elsif(push['project'])
+                    project_request_payload(push)
                   else
                     github_hook_commit(push)
                   end

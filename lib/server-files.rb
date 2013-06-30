@@ -2,6 +2,8 @@ module ServerFiles
 
   # TODO how to allow a server to write files without exposing the shared secrets...
   # Thinking a write ONLY ec2 key PER server
+  # the other thought was this always posts back to the requesting server which writes the file and knows where the data came from
+  # so these boxes have no sensative data on them
   def connection
     @connection ||= Fog::Storage.new(
                                   :provider          => 'AWS',
