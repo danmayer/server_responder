@@ -168,7 +168,7 @@ else
       repo_location = "#{default_local_location}#{repo_name}"
 
       Dir.chdir(repo_location) do
-        command = "PORT=#{PAYLOAD_PORT} foreman start"
+        command = "bundle install; PORT=#{PAYLOAD_PORT} foreman start"
         status, stdout, stderr = systemu command do |cid|
           begin
             `sleep 15`
