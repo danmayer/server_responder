@@ -18,6 +18,8 @@ __TODO__
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
   * return results and exit status
   * improve debug / deployment cycle, local testing
+  * project need to be able to setup their environment and share keys etc...?
+  * can't shutdown foreman with 9 it doesn't end all the processes it starts
   
 __NOTES__
   
