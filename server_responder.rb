@@ -77,7 +77,7 @@ else
   end
 
   def github_hook_commit(push)
-    local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
+    local_repos = default_local_location
     repo_url = push['repository']['url'] rescue nil
     repo_name = push['repository']['name'] rescue nil
     user = push['repository']['owner']['name'] rescue nil
@@ -164,14 +164,19 @@ else
       logger.info "running request for: #{project} hitting #{project_request}"
       results = "error running systemu"
 
-      command = "PORT=#{PAYLOAD_PORT} foreman start"
-      status, stdout, stderr = systemu command do |cid|
-        results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-        logger.info "results: #{results}"
-        write_file(results_location,results)
-        upload_files(results_location)
-        
-        Process.kill 9, cid # kill the daemon
+      repo_name = project
+      repo_location = "#{default_local_location}#{repo_name}"
+
+      Dir.chdir(repo_location) do
+        command = "PORT=#{PAYLOAD_PORT} foreman start"
+        status, stdout, stderr = systemu command do |cid|
+          results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+          logger.info "results: #{results}"
+          write_file(results_location,results)
+          upload_files(results_location)
+          
+          Process.kill 9, cid # kill the daemon
+        end
       end
       results
     end
@@ -203,6 +208,10 @@ else
   end
 
   private
+
+  def default_local_location
+    ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
+  end
 
   def debug_env
     puts `which ruby`
