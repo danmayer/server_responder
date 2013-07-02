@@ -152,9 +152,27 @@ else
     end
   end
 
+  PAYLOAD_PORT = 4005
   def project_request_payload(push)
     logger.info "running project_request_payload"
-    "complete"
+    project = push['project']
+    project_request = push['project_request']
+    results_location = push['results_location']
+    if project && project_request && results_location
+      logger.info "running request for: #{project} hitting #{project_request}"
+      results = "error running systemu"
+
+      command = "PORT=#{PAYLOAD_PORT} foreman start"
+      status, stdout, stderr = systemu command do |cid|
+        results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}"
+        logger.info "results: #{results}"
+        write_file(results_location,results)
+        upload_files(results_location)
+        
+        Process.kill 9, cid # kill the daemon
+      end
+      results
+    end
   end
 
   post '/' do

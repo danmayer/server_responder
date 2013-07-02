@@ -6,6 +6,7 @@ gem 'json'
 gem 'fog'
 gem 'rack-ssl-enforcer'
 gem 'rest-client'
+gem 'systemu'
 
 # Prevent installation on Heroku with
 # heroku config:add BUNDLE_WITHOUT="development:test"
