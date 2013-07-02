@@ -170,13 +170,22 @@ else
       Dir.chdir(repo_location) do
         command = "PORT=#{PAYLOAD_PORT} foreman start"
         status, stdout, stderr = systemu command do |cid|
-          results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-          logger.info "results: #{results}"
-          write_file(results_location,results)
-          upload_files(results_location)
-          
-          Process.kill 9, cid # kill the daemon
+          begin
+            results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+            logger.info "results: #{results}"
+            write_file(results_location,results)
+            upload_files(results_location)
+          rescue => error
+            logger.error "error hitting app #{error}"
+            logger.error "error hitting app #{error.backtrace.join("\n")}"
+          ensure
+            Process.kill 9, cid # kill the daemon
+          end
         end
+        Rails.logger.info "status: #{status}"
+        Rails.logger.info "stdout: #{stdout}"
+        Rails.logger.info "stderr: #{stderr}"
+        
       end
       results
     end
