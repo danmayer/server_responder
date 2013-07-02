@@ -180,7 +180,7 @@ else
             logger.error "error hitting app #{error}"
             logger.error "error hitting app #{error.backtrace.join("\n")}"
           ensure
-            Process.kill 2, cid # kill the daemon
+            Process.kill 'SIGTERM', cid # kill the daemon
           end
         end
         logger.info "status: #{status}"
