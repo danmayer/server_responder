@@ -164,7 +164,7 @@ else
       logger.info "running request for: #{project} hitting #{project_request}"
       results = "error running systemu"
 
-      repo_name = project
+      repo_name = project.split('/')[1]
       repo_location = "#{default_local_location}#{repo_name}"
 
       Dir.chdir(repo_location) do
