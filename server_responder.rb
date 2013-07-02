@@ -171,6 +171,7 @@ else
         command = "PORT=#{PAYLOAD_PORT} foreman start"
         status, stdout, stderr = systemu command do |cid|
           begin
+            `sleep 15`
             results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
             logger.info "results: #{results}"
             write_file(results_location,results)
