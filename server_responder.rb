@@ -4,6 +4,7 @@ require 'fileutils'
 require './lib/server-files'
 require 'rack-ssl-enforcer'
 require 'rest_client'
+require 'systemu'
 include ServerFiles
 
 tmp_file = "tmp/last_request.txt"
