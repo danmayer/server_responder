@@ -182,9 +182,9 @@ else
             Process.kill 9, cid # kill the daemon
           end
         end
-        Rails.logger.info "status: #{status}"
-        Rails.logger.info "stdout: #{stdout}"
-        Rails.logger.info "stderr: #{stderr}"
+        logger.info "status: #{status}"
+        logger.info "stdout: #{stdout}"
+        logger.info "stderr: #{stderr}"
         
       end
       results
