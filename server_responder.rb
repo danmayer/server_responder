@@ -171,9 +171,9 @@ else
         command = "bundle install; PORT=#{PAYLOAD_PORT} foreman start"
         status, stdout, stderr = systemu command do |cid|
           begin
-            `sleep 10`
+            sleep(10)
             results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-            logger.info "results: #{results}"
+            logger.error "results: #{results}"
             write_file(results_location,results)
             upload_files(results_location)
           rescue => error
