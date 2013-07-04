@@ -172,7 +172,7 @@ else
         status, stdout, stderr = systemu command do |cid|
           begin
             logger.info "before sleep"
-            sleep(300)
+            sleep(100)
             logger.info "after sleep"
             # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
             results = 'nah'
