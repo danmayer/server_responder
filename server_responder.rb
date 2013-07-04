@@ -171,7 +171,9 @@ else
         command = "bundle install; PORT=#{PAYLOAD_PORT} foreman start"
         status, stdout, stderr = systemu command do |cid|
           begin
+            logger.info "before sleep"
             sleep(300)
+            logger.info "after sleep"
             results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
             logger.error "results: #{results}"
             write_file(results_location,results)
@@ -184,7 +186,7 @@ else
             write_file(results_location, "#{error_msg}\n #{error_trace}")
           ensure
             begin
-              Process.kill 'SIGINT', cid # kill the daemon
+              #Process.kill 'SIGINT', cid # kill the daemon
             rescue Errno::ESRCH
               logger.error "error killing process likely crashed when running"
             end
