@@ -169,13 +169,13 @@ else
 
       Dir.chdir(repo_location) do
         redid_pid = nil
-        status, stdout, stderr = systemu "redis-server" do |rediscid|
+        r_status, r_stdout, r_stderr = systemu "redis-server" do |rediscid|
 
           command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
           status, stdout, stderr = systemu command do |cid|
             begin
               logger.info "before sleep"
-              sleep(10)
+              sleep(60)
               logger.info "after sleep"
               results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
               #results = 'nah'
@@ -197,11 +197,10 @@ else
                 logger.error "error killing process likely crashed when running"
               end
             end
-            logger.info "status: #{status}"
-            logger.info "stdout: #{stdout}"
-            logger.info "stderr: #{stderr}"
           end
-
+          logger.info "status: #{status}"
+          logger.info "stdout: #{stdout}"
+          logger.info "stderr: #{stderr}"
         end
         
       end
