@@ -13,7 +13,7 @@ local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
 
   def upload_files(results_location)
     artifact_files = Dir.glob("./artifacts/*")
-    puts "files uploading: #{artifact_files.inspect}"
+    logger.info "files uploading: #{artifact_files.inspect}"
     if artifact_files.length > 0
       write_file(results_location+'_artifact_files',artifact_files.map{|f| 'https://s3.amazonaws.com/deferred-server/'+results_location+'_artifact_files_'+f.to_s.gsub('/','_')}.to_json)
       artifact_files.each do |file|
