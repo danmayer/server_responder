@@ -175,10 +175,10 @@ else
           status, stdout, stderr = systemu command do |cid|
             begin
               logger.info "before sleep"
-              sleep(20)
+              sleep(10)
               logger.info "after sleep"
-              # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-              results = 'nah'
+              results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+              #results = 'nah'
               logger.error "results: #{results}"
               write_file(results_location,results)
               #upload_files(results_location)
@@ -192,7 +192,7 @@ else
               begin
                 logger.info "redis is #{rediscid}"
                 Process.kill 'SIGINT', rediscid # kill the daemon
-                #Process.kill 'SIGINT', cid # kill the daemon
+                Process.kill 'SIGINT', cid # kill the daemon
               rescue Errno::ESRCH
                 logger.error "error killing process likely crashed when running"
               end
