@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require 'pry'
+require 'sinatra'
+require './server_responder.rb'
+
+binding.pry
+exit(0)

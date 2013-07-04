@@ -174,7 +174,8 @@ else
             logger.info "before sleep"
             sleep(300)
             logger.info "after sleep"
-            results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+            # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+            results = 'nah'
             logger.error "results: #{results}"
             write_file(results_location,results)
             upload_files(results_location)
