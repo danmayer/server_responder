@@ -168,8 +168,8 @@ else
       repo_location = "#{default_local_location}#{repo_name}"
 
       Dir.chdir(repo_location) do
-        command = "bundle install; PORT=#{PAYLOAD_PORT} foreman start"
-        status, stdout, stderr = systemu command, 0 => "" do |cid|
+        command = "bundle install; PORT=#{PAYLOAD_PORT} bundle exec rackup -p #{PAYLOAD_PORT} &; redis-server &"
+        status, stdout, stderr = systemu command do |cid|
           begin
             logger.info "before sleep"
             sleep(10)
