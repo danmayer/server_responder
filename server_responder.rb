@@ -170,37 +170,39 @@ else
       Dir.chdir(repo_location) do
         redid_pid = nil
         status, stdout, stderr = systemu "redis-server" do |rediscid|
-          redis_pid = rediscid
-        end
-        command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
-        status, stdout, stderr = systemu command do |cid|
-          begin
-            logger.info "before sleep"
-            sleep(20)
-            logger.info "after sleep"
-            # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-            results = 'nah'
-            logger.error "results: #{results}"
-            write_file(results_location,results)
-            #upload_files(results_location)
-          rescue => error
-            error_msg = "error hitting app #{error}"
-            logger.error error_msg
-            error_trace = "error hitting app #{error.backtrace.join("\n")}"
-            logger.error error_trace
-            write_file(results_location, "#{error_msg}\n #{error_trace}")
-          ensure
+
+          command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
+          status, stdout, stderr = systemu command do |cid|
             begin
-              logger.info "redis is #{redis_pid}"
-              #Process.kill 'SIGINT', cid # kill the daemon
-            rescue Errno::ESRCH
-              logger.error "error killing process likely crashed when running"
+              logger.info "before sleep"
+              sleep(20)
+              logger.info "after sleep"
+              # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
+              results = 'nah'
+              logger.error "results: #{results}"
+              write_file(results_location,results)
+              #upload_files(results_location)
+            rescue => error
+              error_msg = "error hitting app #{error}"
+              logger.error error_msg
+              error_trace = "error hitting app #{error.backtrace.join("\n")}"
+              logger.error error_trace
+              write_file(results_location, "#{error_msg}\n #{error_trace}")
+            ensure
+              begin
+                logger.info "redis is #{rediscid}"
+                Process.kill 'SIGINT', rediscid # kill the daemon
+                #Process.kill 'SIGINT', cid # kill the daemon
+              rescue Errno::ESRCH
+                logger.error "error killing process likely crashed when running"
+              end
             end
+            logger.info "status: #{status}"
+            logger.info "stdout: #{stdout}"
+            logger.info "stderr: #{stderr}"
           end
+
         end
-        logger.info "status: #{status}"
-        logger.info "stdout: #{stdout}"
-        logger.info "stderr: #{stderr}"
         
       end
       results
