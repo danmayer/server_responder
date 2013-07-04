@@ -169,7 +169,7 @@ else
 
       Dir.chdir(repo_location) do
         command = "bundle install; PORT=#{PAYLOAD_PORT} foreman start"
-        status, stdout, stderr = systemu command, 0=> $stdin do |cid|
+        status, stdout, stderr = systemu command, 0 => "" do |cid|
           begin
             logger.info "before sleep"
             sleep(10)
