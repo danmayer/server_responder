@@ -19,8 +19,9 @@ __TODO__
   * return results and exit status
   * improve debug / deployment cycle, local testing
   * project need to be able to setup their environment and share keys etc...?
-  * can't shutdown foreman with 9 it doesn't end all the processes it starts
-  
+  * can't shutdown foreman with 9 it doesn't end all the processes it starts (sigint seems closer getting right output on server but leaves redis running)
+  * need a utility to just pass a S3 fragmant and have it cat the results for me
+
 __NOTES__
   
   * All logging is going to the `/opt/bitnami/apache2/logs/error_log` I want to have something like sinatra log in app/logs but since moving to the newer AMI it just crashes if I try to redirect the logging.

@@ -177,8 +177,11 @@ else
             write_file(results_location,results)
             upload_files(results_location)
           rescue => error
-            logger.error "error hitting app #{error}"
-            logger.error "error hitting app #{error.backtrace.join("\n")}"
+            error_msg = "error hitting app #{error}"
+            logger.error error_msg
+            error_trace = "error hitting app #{error.backtrace.join("\n")}"
+            logger.error error_trace
+            write_file(results_location, "#{error_msg}\n #{error_trace}")
           ensure
             Process.kill '-SIGINT', cid # kill the daemon
           end
