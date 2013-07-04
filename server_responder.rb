@@ -168,9 +168,9 @@ else
       repo_location = "#{default_local_location}#{repo_name}"
 
       Dir.chdir(repo_location) do
-        redis-pid = nil
-        status, stdout, stderr = systemu "redis-server" do |redis-cid|
-          redis-pid = redis-cid
+        redid_pid = nil
+        status, stdout, stderr = systemu "redis-server" do |rediscid|
+          redis_pid = rediscid
         end
         command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
         status, stdout, stderr = systemu command do |cid|
@@ -191,7 +191,7 @@ else
             write_file(results_location, "#{error_msg}\n #{error_trace}")
           ensure
             begin
-              logger.info "redis is #{redis-pid}"
+              logger.info "redis is #{redis_pid}"
               #Process.kill 'SIGINT', cid # kill the daemon
             rescue Errno::ESRCH
               logger.error "error killing process likely crashed when running"
