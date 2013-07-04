@@ -183,7 +183,11 @@ else
             logger.error error_trace
             write_file(results_location, "#{error_msg}\n #{error_trace}")
           ensure
-            Process.kill '-SIGINT', cid # kill the daemon
+            begin
+              Process.kill '-SIGINT', cid # kill the daemon
+            rescue Errno::ESRCH
+              logger.error "error killing process likely crashed when running"
+            end
           end
         end
         logger.info "status: #{status}"
