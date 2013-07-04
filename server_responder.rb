@@ -172,13 +172,13 @@ else
         status, stdout, stderr = systemu command, 0=> $stdin do |cid|
           begin
             logger.info "before sleep"
-            sleep(100)
+            sleep(10)
             logger.info "after sleep"
             # results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
             results = 'nah'
             logger.error "results: #{results}"
             write_file(results_location,results)
-            upload_files(results_location)
+            #upload_files(results_location)
           rescue => error
             error_msg = "error hitting app #{error}"
             logger.error error_msg
