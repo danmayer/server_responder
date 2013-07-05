@@ -169,6 +169,7 @@ else
 
       Dir.chdir(repo_location) do
        
+        logger.info ENV.inspect
         cid = fork do
           ENV.clear
           exec("cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log")
