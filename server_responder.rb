@@ -171,7 +171,12 @@ else
        
         logger.info ENV.inspect
         cid = fork do
-          ENV.clear
+          ENV['REQUEST_METHOD']=nil
+          ENV['REQUEST_URI']=nil
+          ENV['QUERY_STRING']=nil
+          ENV['PWD']=nil
+          ENV['DOCUMENT_ROOT']=nil
+          ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
           exec("cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log")
         end
         puts "running child is #{cid}"
