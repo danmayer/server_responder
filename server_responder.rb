@@ -170,7 +170,8 @@ else
       Dir.chdir(repo_location) do
        
         cid = fork do
-          `cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start`
+          logger.info `whoami`
+          `cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log`
         end
         puts "running child is #{cid}"
 
