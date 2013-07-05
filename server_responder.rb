@@ -199,7 +199,7 @@ else
                 #logger.info "redis is #{rediscid}"
                 #Process.kill 'SIGINT', rediscid # kill the daemon
                 logger.info "killing child process"
-                Process.kill 'SIGINT', cid # kill the daemon
+                #Process.kill 'SIGINT', cid # kill the daemon
               rescue Errno::ESRCH
                 logger.error "error killing process likely crashed when running"
               end
