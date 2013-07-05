@@ -170,9 +170,9 @@ else
       Dir.chdir(repo_location) do
        
         cid = fork do
-          `PORT=#{PAYLOAD_PORT} foreman start`
+          `cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start`
         end
-        puts "running child is #{child_pid}"
+        puts "running child is #{cid}"
 
         # redid_pid = nil
         # r_status, r_stdout, r_stderr = systemu "redis-server" do |rediscid|
