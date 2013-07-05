@@ -171,7 +171,7 @@ else
        
         cid = fork do
           logger.info `whoami`
-          `cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log`
+          exec("cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log")
         end
         puts "running child is #{cid}"
 
