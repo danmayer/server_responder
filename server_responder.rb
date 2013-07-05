@@ -169,7 +169,6 @@ else
 
       Dir.chdir(repo_location) do
        
-        logger.info ENV.inspect
         cid = fork do
           ENV['REQUEST_METHOD']=nil
           ENV['REQUEST_URI']=nil
@@ -206,7 +205,7 @@ else
                 #logger.info "redis is #{rediscid}"
                 #Process.kill 'SIGINT', rediscid # kill the daemon
                 logger.info "killing child process"
-                #Process.kill 'SIGINT', cid # kill the daemon
+                Process.kill 'SIGINT', cid # kill the daemon
               rescue Errno::ESRCH
                 logger.error "error killing process likely crashed when running"
               end
