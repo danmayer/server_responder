@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require 'json'
 require 'fog'
 require 'fileutils'
@@ -181,9 +182,9 @@ else
 
         puts "running child is #{cid}"
             begin
-              logger.info "before sleep"
-              sleep(10)
-              logger.info "after sleep"
+              logger.info "sleep while app boots"
+              sleep(7)
+              logger.info "waking up to hit app"
               results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
               logger.error "results: #{results}"
               write_file(results_location,results)
