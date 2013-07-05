@@ -168,14 +168,20 @@ else
       repo_location = "#{default_local_location}#{repo_name}"
 
       Dir.chdir(repo_location) do
-        redid_pid = nil
-        r_status, r_stdout, r_stderr = systemu "redis-server" do |rediscid|
+       
+        cid = fork do
+          `PORT=#{PAYLOAD_PORT} foreman start`
+        end
+        puts "running child is #{child_pid}"
 
-          command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
-          status, stdout, stderr = systemu command do |cid|
+        # redid_pid = nil
+        # r_status, r_stdout, r_stderr = systemu "redis-server" do |rediscid|
+
+        #   command = "bundle install; bundle exec rackup -p #{PAYLOAD_PORT}"
+        #   status, stdout, stderr = systemu command do |cid|
             begin
               logger.info "before sleep"
-              sleep(60)
+              sleep(10)
               logger.info "after sleep"
               results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
               #results = 'nah'
@@ -190,18 +196,18 @@ else
               write_file(results_location, "#{error_msg}\n #{error_trace}")
             ensure
               begin
-                logger.info "redis is #{rediscid}"
-                Process.kill 'SIGINT', rediscid # kill the daemon
+                #logger.info "redis is #{rediscid}"
+                #Process.kill 'SIGINT', rediscid # kill the daemon
                 Process.kill 'SIGINT', cid # kill the daemon
               rescue Errno::ESRCH
                 logger.error "error killing process likely crashed when running"
               end
             end
-          end
-          logger.info "status: #{status}"
-          logger.info "stdout: #{stdout}"
-          logger.info "stderr: #{stderr}"
-        end
+          #end
+        #   logger.info "status: #{status}"
+        #   logger.info "stdout: #{stdout}"
+        #   logger.info "stderr: #{stderr}"
+        # end
         
       end
       results
