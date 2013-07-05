@@ -159,7 +159,7 @@ else
     project = push['project']
     project_request = push['project_request']
     results_location = push['results_location']
-    logger.info "about to run"
+
     if project && project_request && results_location
       logger.info "running request for: #{project} hitting #{project_request}"
       results = "error running systemu"
