@@ -177,7 +177,9 @@ else
           ENV['PWD']=nil
           ENV['DOCUMENT_ROOT']=nil
           ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
-          exec("cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log")
+          full_cmd = "cd #{repo_location}; PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log"
+          logger.info "running: #{full_cmd}"
+          exec(full_cmd)
         end
 
         puts "running child is #{cid}"
