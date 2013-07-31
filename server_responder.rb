@@ -135,6 +135,7 @@ else
   end
 
   def project_cmd_payload(push)
+    results_location = push['results_location']
     local_repos = default_local_location
     repo_url = push['project'] rescue nil
     repo_url = "https://github.com/#{repo_url}"
@@ -169,6 +170,7 @@ else
         :results     => results
       }
       write_file(commit_key,json_results.to_json)
+      write_file(results_location,results.to_json)
     end
     RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
     {:project_key => project_key, :commit_key => commit_key}
