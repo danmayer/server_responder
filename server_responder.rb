@@ -170,7 +170,7 @@ else
         :results     => results
       }
       write_file(commit_key,json_results.to_json)
-      write_file(results_location,results.to_json)
+      write_file(results_location,json_results.to_json)
     end
     RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
     {:project_key => project_key, :commit_key => commit_key}
