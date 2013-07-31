@@ -140,8 +140,8 @@ else
     repo_url = push['project'] rescue nil
     repo_url = "https://github.com/#{repo_url}"
     repo_name = push['project'] rescue nil
-    user = repo_name.split('/').last
-    repo_name= repo_name.split('/').first
+    user = repo_name.split('/').first
+    repo_name= repo_name.split('/').last
     after_commit = push['commit']
     project_key  = "#{user}/#{repo_name}"
     commit_key   = "#{project_key}/#{after_commit}"
