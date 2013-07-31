@@ -134,6 +134,48 @@ else
     results
   end
 
+  def project_cmd_payload(push)
+    local_repos = default_local_location
+    repo_url = push['project'] rescue nil
+    repo_url = "https://github.com/#{repo_url}"
+    repo_name = push['project'] rescue nil
+    user = repo_name.split('/').last
+    repo_name= repo_name.split('/').first
+    after_commit = push['commit']
+    project_key  = "#{user}/#{repo_name}"
+    commit_key   = "#{project_key}/#{after_commit}"
+    logger.info("repo_url: #{repo_url}")
+
+    if repo_url && repo_name
+      repo_location = "#{local_repos}#{repo_name}"
+      if File.exists?(repo_location)
+        logger.info("update repo")
+        `cd #{repo_location}; git pull`
+      else
+        logger.info("create repo")
+        `cd #{local_repos}; git clone #{repo_url}`
+      end
+      cmd = params['command'] || "churn"
+      results = `cd #{repo_location}; #{cmd}`
+      #temporary hack for the empty results not creating files / valid output
+      if results==''
+        results = 'cmd completed with no output'
+      end
+      puts "results: #{results}"
+      exit_status = $?.exitstatus
+      json_results = {
+        :cmd_run     => cmd,
+        :exit_status => exit_status,
+        :results     => results
+      }
+      write_file(commit_key,json_results.to_json)
+    end
+    RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
+    {:project_key => project_key, :commit_key => commit_key}
+
+    results
+  end
+
   def script_payload(push)
     logger.info "running script_payload"
     script_payload = push['script_payload']
@@ -216,8 +258,10 @@ else
         push = JSON.parse(params['payload'])
         results = if push['script_payload']
                     script_payload(push)
-                  elsif(push['project'])
+                  elsif(push['project'] && push['project_request'])
                     project_request_payload(push)
+                  elsif(push['project'] && push['project_request'])
+                    project_cmd_payload(push)
                   else
                     github_hook_commit(push)
                   end
