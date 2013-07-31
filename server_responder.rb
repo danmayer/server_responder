@@ -262,7 +262,7 @@ else
                     script_payload(push)
                   elsif(push['project'] && push['project_request'])
                     project_request_payload(push)
-                  elsif(push['project'] && push['project_request'])
+                  elsif(push['project'] && push['command'])
                     project_cmd_payload(push)
                   else
                     github_hook_commit(push)
