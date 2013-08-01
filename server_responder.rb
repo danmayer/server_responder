@@ -157,7 +157,7 @@ else
         `cd #{local_repos}; git clone #{repo_url}`
       end
       cmd = params['command'] || "churn"
-      full_command = "cd #{repo_location}; #{cmd}"
+      full_command = "cd #{repo_location}; git checkout #{after_commit}; #{cmd}"
       logger.info("running: #{full_command}")
       results = `#{full_command}`
       #temporary hack for the empty results not creating files / valid output
