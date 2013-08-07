@@ -146,13 +146,14 @@ else
     commit = push['commit']
     project_key  = "#{user}/#{repo_name}"
     commit_key   = "#{project_key}/#{commit}"
+    logger.info("repo_url: #{repo_url}")
 
     if commit=='history'
       #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
       from_date  = 30.days.ago.to_date
       until_date = Date.today
       (from_date..until_date).each do |date|
-        git_log_cmd = "git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
+        git_log_cmd = "cd #{repo_location}; git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
         puts "git_log_cmd: #{git_log_cmd}"
         git_hash = `#{git_log_cmd}`.to_s.strip
         project_cmd_payload(push.merge('commit' => git_hash))
@@ -161,7 +162,6 @@ else
       end
       {:project_key => project_key, :commit_key => commit_key}
     else
-      logger.info("repo_url: #{repo_url}")
 
       if repo_url && repo_name
         repo_location = "#{local_repos}#{repo_name}"
