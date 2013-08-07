@@ -149,7 +149,7 @@ else
 
     if commit=='history'
       #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
-      from_date  = 30.days.ago
+      from_date  = 30.days.ago.to_date
       until_date = Date.today
       (from_date..until_date).each do |date|
         git_log_cmd = "git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
