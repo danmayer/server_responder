@@ -7,6 +7,7 @@ gem 'fog'
 gem 'rack-ssl-enforcer'
 gem 'rest-client'
 gem 'systemu'
+gem '18n'
 gem 'active_support'
 
 # Prevent installation on Heroku with
