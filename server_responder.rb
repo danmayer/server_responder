@@ -149,6 +149,7 @@ else
     logger.info("repo_url: #{repo_url}")
 
     if commit=='history'
+      repo_location = "#{local_repos}#{repo_name}"
       #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
       from_date  = 30.days.ago.to_date
       until_date = Date.today
