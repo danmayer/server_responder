@@ -156,6 +156,8 @@ else
         puts "git_log_cmd: #{git_log_cmd}"
         git_hash = `#{git_log_cmd}`.to_s.strip
         project_cmd_payload(push.merge('commit' => git_hash))
+        resource = RestClient::Resource.new("http://churn.picoappz.com/#{project_key}/commits/#{git_hash}")
+        resource.post(:rechurn => 'false')
       end
       {:project_key => project_key, :commit_key => commit_key}
     else
