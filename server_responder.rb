@@ -6,6 +6,7 @@ require './lib/server-files'
 require 'rack-ssl-enforcer'
 require 'rest_client'
 require 'systemu'
+require 'active_support/core_ext'
 include ServerFiles
 
 tmp_file = "tmp/last_request.txt"
@@ -142,42 +143,56 @@ else
     repo_name = push['project'] rescue nil
     user = repo_name.split('/').first
     repo_name= repo_name.split('/').last
-    after_commit = push['commit']
+    commit = push['commit']
     project_key  = "#{user}/#{repo_name}"
-    commit_key   = "#{project_key}/#{after_commit}"
-    logger.info("repo_url: #{repo_url}")
+    commit_key   = "#{project_key}/#{commit}"
 
-    if repo_url && repo_name
-      repo_location = "#{local_repos}#{repo_name}"
-      if File.exists?(repo_location)
-        logger.info("update repo")
-        `cd #{repo_location}; git pull`
-      else
-        logger.info("create repo")
-        `cd #{local_repos}; git clone #{repo_url}`
+    if commit=='history'
+      #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
+      from_date  = 30.days.ago
+      until_date = Date.today
+      (from_date..until_date).each do |date|
+        git_log_cmd = "git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
+        puts "git_log_cmd: #{git_log_cmd}"
+        git_hash = `#{git_log_cmd}`.to_s.strip
+        project_cmd_payload(push.merge('commit' => git_hash))
       end
-      cmd = params['command'] || "churn"
-      full_command = "cd #{repo_location}; git checkout #{after_commit}; #{cmd}"
-      logger.info("running: #{full_command}")
-      results = `#{full_command}`
-      #temporary hack for the empty results not creating files / valid output
-      if results==''
-        results = 'cmd completed with no output'
+      {:project_key => project_key, :commit_key => commit_key}
+    else
+      logger.info("repo_url: #{repo_url}")
+
+      if repo_url && repo_name
+        repo_location = "#{local_repos}#{repo_name}"
+        if File.exists?(repo_location)
+          logger.info("update repo")
+          `cd #{repo_location}; git pull`
+        else
+          logger.info("create repo")
+          `cd #{local_repos}; git clone #{repo_url}`
+        end
+        cmd = params['command'] || "churn"
+        full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
+        logger.info("running: #{full_command}")
+        results = `#{full_command}`
+        #temporary hack for the empty results not creating files / valid output
+        if results==''
+          results = 'cmd completed with no output'
+        end
+        puts "results: #{results}"
+        exit_status = $?.exitstatus
+        json_results = {
+          :cmd_run     => cmd,
+          :exit_status => exit_status,
+          :results     => results
+        }
+        write_file(commit_key,json_results.to_json)
+        write_file(results_location,json_results.to_json)
       end
-      puts "results: #{results}"
-      exit_status = $?.exitstatus
-      json_results = {
-        :cmd_run     => cmd,
-        :exit_status => exit_status,
-        :results     => results
-      }
-      write_file(commit_key,json_results.to_json)
-      write_file(results_location,json_results.to_json)
+      RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
+      {:project_key => project_key, :commit_key => commit_key}
+
+      results
     end
-    RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
-    {:project_key => project_key, :commit_key => commit_key}
-
-    results
   end
 
   def script_payload(push)
