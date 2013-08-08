@@ -2,11 +2,14 @@
 require 'json'
 require 'fog'
 require 'fileutils'
-require './lib/server-files'
 require 'rack-ssl-enforcer'
 require 'rest_client'
 require 'systemu'
 require 'active_support/core_ext'
+
+require './lib/server-files'
+require './lib/project_commands'
+
 include ServerFiles
 
 tmp_file = "tmp/last_request.txt"
