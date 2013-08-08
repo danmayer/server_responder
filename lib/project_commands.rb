@@ -11,8 +11,8 @@ class ProjectCommands
       current_git_commit = `#{git_log_cmd}`.to_s.strip
       current_commit_key   = "#{project_key}/#{current_git_commit}"
       project_command(project_key, repo_location, default_local_location, repo_url, current_git_commit, current_commit_key, cmd, results_location)
-      resource = RestClient::Resource.new("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}")
-      resource.post(:rechurn => 'false')
+      #resource = RestClient::Resource.new("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}")
+      #resource.post(:rechurn => 'false')
     end
     {:project_key => project_key, :commit_key => commit_key}
   end
