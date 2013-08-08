@@ -1,7 +1,7 @@
 class ProjectCommands
 
   def self.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-    from_date  = 30.days.ago.to_date
+    from_date  = 60.days.ago.to_date
     until_date = Date.today
     completed_commits = []
 
@@ -11,7 +11,7 @@ class ProjectCommands
       puts "git_log_cmd: #{git_log_cmd}"
       current_git_commit = `#{git_log_cmd}`.to_s.strip
       puts "commit #{current_git_commit} for date #{date}"
-      unless completed_commits.include?(current_git_commit)
+      unless current_git_commit!='' && completed_commits.include?(current_git_commit)
         completed_commits << current_git_commit
         current_commit_key       = "#{project_key}/#{current_git_commit}"
         current_results_location = results_location.gsub('_history_',"_#{current_git_commit}_")
