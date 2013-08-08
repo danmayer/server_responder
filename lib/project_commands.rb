@@ -10,8 +10,9 @@ class ProjectCommands
       puts "git_log_cmd: #{git_log_cmd}"
       current_git_commit = `#{git_log_cmd}`.to_s.strip
       current_commit_key   = "#{project_key}/#{current_git_commit}"
-      current_results_location.gsub('_history_',"_#{current_git_commit}_")
-      project_command(project_key, repo_location, default_local_location, repo_url, current_git_commit, current_commit_key, cmd, results_location)
+      current_results_location = results_location.gsub('_history_',"_#{current_git_commit}_")
+
+      project_command(project_key, repo_location, default_local_location, repo_url, current_git_commit, current_commit_key, cmd, current_results_location)
       RestClient.post("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}", :rechurn => 'false')
     end
     {:project_key => project_key, :commit_key => commit_key}
