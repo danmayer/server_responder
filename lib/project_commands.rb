@@ -11,7 +11,7 @@ class ProjectCommands
       puts "git_log_cmd: #{git_log_cmd}"
       current_git_commit = `#{git_log_cmd}`.to_s.strip
       puts "commit #{current_git_commit} for date #{date}"
-      unless current_git_commit!='' && completed_commits.include?(current_git_commit)
+      if current_git_commit!='' && !completed_commits.include?(current_git_commit)
         completed_commits << current_git_commit
         current_commit_key       = "#{project_key}/#{current_git_commit}"
         current_results_location = results_location.gsub('_history_',"_#{current_git_commit}_")
