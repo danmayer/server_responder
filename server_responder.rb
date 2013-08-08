@@ -137,64 +137,31 @@ else
 
   def project_cmd_payload(push)
     results_location = push['results_location']
-    local_repos = default_local_location
-    repo_url = push['project'] rescue nil
-    repo_url = "https://github.com/#{repo_url}"
     repo_name = push['project'] rescue nil
-    user = repo_name.split('/').first
-    repo_name= repo_name.split('/').last
-    commit = push['commit']
+    commit    = push['commit']
+    cmd       = params['command'] || push['command'] || "churn"
+
+    repo_url  = "https://github.com/#{repo_name}"
+    user      = repo_name.split('/').first
+    repo_name = repo_name.split('/').last
+
     project_key  = "#{user}/#{repo_name}"
     commit_key   = "#{project_key}/#{commit}"
-    logger.info("repo_url: #{repo_url}")
 
-    if commit=='history'
+    logger.info("project_cmd_payload repo_url: #{repo_url}")
+    if repo_url && repo_name
       repo_location = "#{local_repos}#{repo_name}"
-      #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
-      from_date  = 30.days.ago.to_date
-      until_date = Date.today
-      (from_date..until_date).each do |date|
-        git_log_cmd = "cd #{repo_location}; git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
-        puts "git_log_cmd: #{git_log_cmd}"
-        git_hash = `#{git_log_cmd}`.to_s.strip
-        project_cmd_payload(push.merge('commit' => git_hash))
-        resource = RestClient::Resource.new("http://churn.picoappz.com/#{project_key}/commits/#{git_hash}")
-        resource.post(:rechurn => 'false')
+      if commit=='history'
+        ProjectCommands.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
+      else
+        ProjectCommands.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
       end
-      {:project_key => project_key, :commit_key => commit_key}
     else
-
-      if repo_url && repo_name
-        repo_location = "#{local_repos}#{repo_name}"
-        if File.exists?(repo_location)
-          logger.info("update repo")
-          `cd #{repo_location}; git pull`
-        else
-          logger.info("create repo")
-          `cd #{local_repos}; git clone #{repo_url}`
-        end
-        cmd = params['command'] || "churn"
-        full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
-        logger.info("running: #{full_command}")
-        results = `#{full_command}`
-        #temporary hack for the empty results not creating files / valid output
-        if results==''
-          results = 'cmd completed with no output'
-        end
-        puts "results: #{results}"
-        exit_status = $?.exitstatus
-        json_results = {
-          :cmd_run     => cmd,
-          :exit_status => exit_status,
-          :results     => results
-        }
-        write_file(commit_key,json_results.to_json)
-        write_file(results_location,json_results.to_json)
-      end
-      RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
-      {:project_key => project_key, :commit_key => commit_key}
-
-      results
+      {
+        :cmd_run     => cmd,
+        :exit_status => 1,
+        :results     => "error either repo_url or repo_name missing"
+      }
     end
   end
 
