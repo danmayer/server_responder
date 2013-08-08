@@ -150,7 +150,7 @@ else
 
     logger.info("project_cmd_payload repo_url: #{repo_url}")
     if repo_url && repo_name
-      repo_location = "#{local_repos}#{repo_name}"
+      repo_location = "#{default_local_location}#{repo_name}"
       if commit=='history'
         ProjectCommands.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
       else
