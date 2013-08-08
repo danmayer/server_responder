@@ -19,15 +19,15 @@ class ProjectCommands
 
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     if File.exists?(repo_location)
-      logger.info("update repo")
+      puts ("update repo")
       `cd #{repo_location}; git pull`
     else
-      logger.info("create repo")
+      puts("create repo")
       `cd #{local_repos}; git clone #{repo_url}`
     end
 
     full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
-    logger.info("running: #{full_command}")
+    puts ("running: #{full_command}")
     results = `#{full_command}`
     #temporary hack for the empty results not creating files / valid output
     if results==''
