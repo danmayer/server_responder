@@ -1,4 +1,4 @@
-Server is alive.
+ServerResponder is alive! Here is some debug information.
 
 <h3>last results</h3>
 <pre>
@@ -8,11 +8,4 @@ Server is alive.
 <h3>last push</h3>
 <pre>
 <%= @last_push %>
-</pre>
-
-<h3>debug info</h3>
-<pre>
-whoami: <%= `whoami` %>
-printenv:
-<%= `printenv`.gsub(/^(AMAZON_ACCESS_KEY_ID|AMAZON_SECRET_ACCESS_KEY|EC2_|SERVER_RESPONDER_API_KEY).*/,'') %>
 </pre>

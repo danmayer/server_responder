@@ -1,291 +1,128 @@
 # encoding: UTF-8
 require 'json'
-require 'fog'
 require 'fileutils'
 require 'rack-ssl-enforcer'
 require 'rest_client'
 require 'systemu'
 require 'active_support/core_ext'
 
-require './lib/server-files'
+require './lib/server_files'
+require './lib/server_helpers'
 require './lib/project_commands'
 
 include ServerFiles
+include ServerHelpers
 
-tmp_file = "tmp/last_request.txt"
-tmp_results = "tmp/results.txt"
-local_repos = ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
+ADMIN_PASSWORD = ENV['SERVER_RESPONDER_ADMIN_PASS'] || 'default_password'
 
-  def upload_files(results_location)
-    artifact_files = Dir.glob("./artifacts/*")
-    logger.info "files uploading: #{artifact_files.inspect}"
-    if artifact_files.length > 0
-      write_file(results_location+'_artifact_files',artifact_files.map{|f| 'https://s3.amazonaws.com/deferred-server/'+results_location+'_artifact_files_'+f.to_s.gsub('/','_')}.to_json)
-      artifact_files.each do |file|
-        mimetype = `file -Ib #{file}`.gsub(/\n/,"")
-        write_file(results_location+'_artifact_files_'+file.to_s.gsub('/','_'), File.read(file), :content_type => mimetype)
-      end
+use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
+set :public_folder, File.dirname(__FILE__) + '/public'
+set :root, File.dirname(__FILE__)
+enable :logging
+
+helpers do
+  def protected!
+    unless authorized?
+      response['WWW-Authenticate'] = %(Basic realm="Testing HTTP Auth")
+      throw(:halt, [401, "Not authorized\n"])
     end
   end
 
-  def reset_artifacts_directory
-    FileUtils.rm_rf('./artifacts', :secure => false)
-    Dir.mkdir('./artifacts') unless File.exists?('./artifacts')
-    artifact_files = Dir.glob("./artifacts/*")
-    puts "files after clearing: #{artifact_files.inspect}"
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['admin', ADMIN_PASSWORD]
   end
+end
 
-# Run me with 'ruby' and I run as a script
-if $0 =~ /#{File.basename(__FILE__)}$/
-  puts "running as local script"
-  puts "done"
-else
-  use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
-  set :public_folder, File.dirname(__FILE__) + '/public'
-  set :root, File.dirname(__FILE__)
-  enable :logging
+before { protected! if request.path_info == "/" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
-  helpers do
-    def protected!
-      unless authorized?
-        response['WWW-Authenticate'] = %(Basic realm="Testing HTTP Auth")
-        throw(:halt, [401, "Not authorized\n"])
-      end
-    end
-
-    def authorized?
-      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['admin', 'responder']
-    end
+get '/' do
+  @results = File.exists?(tmp_results) ? File.read(tmp_results) : 'no results yet'
+  if File.exists?(tmp_request)
+    @last_push = File.read(tmp_request)
+    @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
   end
+  erb :index
+end
 
-  before { protected! if request.path_info == "/" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
+get '/last_job' do
+  last_job_time = File.exists?(tmp_request) ? File.mtime(tmp_request) : Time.now
+  {:last_time => last_job_time}.to_json
+end
 
-  get '/' do
-    if File.exists?(tmp_results)
-      @results = File.read(tmp_results)
+def process_github_hook_commit(push)
+  local_repos = default_local_location
+  repo_url = push['repository']['url'] rescue nil
+  repo_name = push['repository']['name'] rescue nil
+  user = push['repository']['owner']['name'] rescue nil
+  after_commit = push['after']
+  project_key  = "#{user}/#{repo_name}"
+  commit_key   = "#{project_key}/#{after_commit}"
+  logger.info("process_github_hook_commit repo_url: #{repo_url}")  
+
+  project = Project.new(:name => repo_name, :user => user, :url => repo_url, :commit => after_commit, :repos_dir => default_local_location, :results_location => nil, :logger => logger)
+  project.process_github_hook
+end
+
+def process_project_cmd_payload(push)
+  results_location = push['results_location']
+  repo_name = push['project'] rescue nil
+  commit    = push['commit']
+  cmd       = params['command'] || push['command'] || "churn"
+
+  repo_url  = "https://github.com/#{repo_name}"
+  user      = repo_name.split('/').first
+  repo_name = repo_name.split('/').last
+  logger.info("process_project_cmd_payload repo_url: #{repo_url}")
+  
+  project = Project.new(:name => repo_name, :user => user, :url => repo_url, :commit => commit, :repos_dir => default_local_location, :results_location => results_location, :logger => logger)
+  project.process_cmd(cmd)
+end
+
+def process_project_request_payload(push)
+  project = push['project']
+  user_name = project.split('/')[0]
+  repo_name = project.split('/')[1]
+  project_request = push['project_request']
+  results_location = push['results_location']
+  repo_url  = "https://github.com/#{project}"
+  commit = "HEAD"
+
+  logger.info "running project_request_payload #{project}"
+
+  project = Project.new(:name => repo_name, :user => user_name, :url => repo_url, :commit => commit, :repos_dir => default_local_location, :results_location => results_location, :logger => logger)
+  project.process_request(project_request)
+end
+
+def process_script_payload(push)
+  logger.info "running script_payload"
+  script_payload = push['script_payload']
+  results_location = push['results_location']
+  if script_payload && results_location
+    script_payload = script_payload.gsub("\"","\\\"")
+    reset_artifacts_directory
+    logger.info "running: #{script_payload}"
+    results = `ruby -e "#{script_payload}"`
+    if results==''
+      results = 'script completed with no output'
     end
-    if File.exists?(tmp_file)
-      @last_push = File.read(tmp_file)
-      @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
-    end
-    erb :index
-  end
-
-  get '/last_job' do
-    last_job_time = if File.exists?(tmp_file)
-      File.mtime(tmp_file)
-    else
-      Time.now
-    end
-    {:last_time => last_job_time}.to_json
-  end
-
-  def github_hook_commit(push)
-    local_repos = default_local_location
-    repo_url = push['repository']['url'] rescue nil
-    repo_name = push['repository']['name'] rescue nil
-    user = push['repository']['owner']['name'] rescue nil
-    after_commit = push['after']
-    project_key  = "#{user}/#{repo_name}"
-    commit_key   = "#{project_key}/#{after_commit}"
-    logger.info("repo_url: #{repo_url}")
-
-    if repo_url && repo_name
-      repo_location = "#{local_repos}#{repo_name}"
-      if File.exists?(repo_location)
-        logger.info("update repo")
-        `cd #{repo_location}; git pull`
-      else
-        logger.info("create repo")
-        `cd #{local_repos}; git clone #{repo_url}`
-      end
-      deferred_server_config = "#{repo_location}/.deferred_server"
-      cmd = "churn"
-      if File.exists?(deferred_server_config)
-        cmd = File.read(deferred_server_config)
-        results = nil
-        Dir.chdir(repo_location) do
-          if File.exists?("#{repo_location}/Gemfile")
-            `chmod +w Gemfile.lock`
-            `gem install bundler --no-ri --no-rdoc`
-            `BUNDLE_GEMFILE=#{repo_location}/Gemfile && bundle install`
-          end
-          full_cmd = "BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
-          logger.info "dir: #{repo_location} && running: #{full_cmd}"
-          results = `#{full_cmd} 2>&1`
-        end
-      else
-        results = `cd #{repo_location}; #{cmd}`
-      end
-      #temporary hack for the empty results not creating files / valid output
-      if results==''
-        results = 'script completed with no output'
-      end
-      puts "results: #{results}"
-      exit_status = $?.exitstatus
-      json_results = {
-        :cmd_run     => cmd,
-        :exit_status => exit_status,
-        :results     => results
-      }
-      write_file(commit_key,json_results.to_json)
-      write_commits(project_key, after_commit, commit_key, push)
-    end
-    RestClient.post "http://git-hook-responder.herokuapp.com"+"/request_complete",
-    {:project_key => project_key, :commit_key => commit_key}
-
+    logger.info "results: #{results}"
+    write_file(results_location,results)
+    upload_files(results_location)
     results
   end
+end
 
-  def project_cmd_payload(push)
-    results_location = push['results_location']
-    repo_name = push['project'] rescue nil
-    commit    = push['commit']
-    cmd       = params['command'] || push['command'] || "churn"
-
-    repo_url  = "https://github.com/#{repo_name}"
-    user      = repo_name.split('/').first
-    repo_name = repo_name.split('/').last
-
-    project_key  = "#{user}/#{repo_name}"
-    commit_key   = "#{project_key}/#{commit}"
-
-    logger.info("project_cmd_payload repo_url: #{repo_url}")
-    if repo_url && repo_name
-      repo_location = "#{default_local_location}#{repo_name}"
-      if commit=='history'
-        ProjectCommands.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-      else
-        ProjectCommands.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-      end
-    else
-      {
-        :cmd_run     => cmd,
-        :exit_status => 1,
-        :results     => "error either repo_url or repo_name missing"
-      }
+post '/' do
+  unless authorized_client?
+    logger.error "received a invalid request"
+    "bad api key"#, :status => 503
+  else    
+    begin
+      process_request
+    rescue => error
+      logger.error "error processing post to root with params #{params} error #{error.inspect}\n #{error.backtrace}"
+      raise error
     end
   end
-
-  def script_payload(push)
-    logger.info "running script_payload"
-    script_payload = push['script_payload']
-    results_location = push['results_location']
-    if script_payload && results_location
-      script_payload = script_payload.gsub("\"","\\\"")
-      reset_artifacts_directory
-      logger.info "running: #{script_payload}"
-      results = `ruby -e "#{script_payload}"`
-      #temporary hack for the empty results not creating files / valid output
-      if results==''
-        results = 'script completed with no output'
-      end
-      logger.info "results: #{results}"
-      write_file(results_location,results)
-      upload_files(results_location)
-      results
-    end
-  end
-
-  PAYLOAD_PORT = 4005
-  def project_request_payload(push)
-    logger.info "running project_request_payload"
-    project = push['project']
-    project_request = push['project_request']
-    results_location = push['results_location']
-
-    if project && project_request && results_location
-      logger.info "running request for: #{project} hitting #{project_request}"
-      results = "error running systemu"
-
-      repo_name = project.split('/')[1]
-      repo_location = "#{default_local_location}#{repo_name}"
-
-      Dir.chdir(repo_location) do
-       
-        cid = fork do
-          ENV['REQUEST_METHOD']=nil
-          ENV['REQUEST_URI']=nil
-          ENV['QUERY_STRING']=nil
-          ENV['PWD']=nil
-          ENV['DOCUMENT_ROOT']=nil
-          ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
-          full_cmd = "cd #{repo_location}; LC_ALL=en_US.UTF-8 LC_CTYPE=en_US.UTF-8 PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log"
-          logger.info "running: #{full_cmd}"
-          exec(full_cmd)
-        end
-
-        puts "running child is #{cid}"
-            begin
-              logger.info "sleep while app boots"
-              sleep(7)
-              logger.info "waking up to hit app"
-              results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-              logger.error "results: #{results}"
-              write_file(results_location,results)
-            rescue => error
-              error_msg = "error hitting app #{error}"
-              logger.error error_msg
-              error_trace = "error trace #{error.backtrace.join("\n")}"
-              logger.error error_trace
-              write_file(results_location, "#{error_msg}\n #{error_trace}")
-            ensure
-              begin
-                logger.info "killing child processes"
-                Process.kill '-SIGINT', cid # kill the daemon
-              rescue Errno::ESRCH
-                logger.error "error killing process likely crashed when running"
-              end
-            end
-      end
-      results
-    end
-  end
-
-  post '/' do
-    if params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY']
-      begin
-        File.open(tmp_file, 'w') {|f| f.write(params.to_json) }
-        push = JSON.parse(params['payload'])
-        results = if push['script_payload']
-                    script_payload(push)
-                  elsif(push['project'] && push['project_request'])
-                    project_request_payload(push)
-                  elsif(push['project'] && push['command'])
-                    project_cmd_payload(push)
-                  else
-                    github_hook_commit(push)
-                  end
-
-        File.open(tmp_results, 'w') {|f| f.write(results) }
-        erb :index_push
-      rescue => error
-        logger.error "hit post error #{error.inspect}\n #{error.backtrace}"
-        raise error
-      end
-    else
-      logger.error "received a invalid request"
-      "bad api key"
-    end
-  end
-
-  private
-
-  def default_local_location
-    ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
-  end
-
-  def debug_env
-    puts `which ruby`
-    puts `which gem`
-    puts `gem env`
-    puts `gem list --local`
-    #puts `rvm`
-    puts `whoami`
-    puts `echo $PATH`
-    puts `which bundle`
-    puts `pwd`
-  end
-
 end

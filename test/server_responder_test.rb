@@ -23,6 +23,13 @@ class MyAppTest < Test::Unit::TestCase
     get '/last_job'
     assert_match 'last_time', last_response.body
   end
+  
+  def test_process_github_hook_commit__sucess
+    fake_project = {}
+    fake_project.expects(:process_github_hook).once
+    Project.stubs(:new).returns(fake_project)
+    post '/', github_payload, 'SERVER_RESPONDER_API_KEY' => ENV['SERVER_RESPONDER_API_KEY']
+  end
 
   def test_script_payload__success
     app.any_instance.expects(:write_file).with(anything,"9\n").once
@@ -38,6 +45,21 @@ class MyAppTest < Test::Unit::TestCase
   end
 
   private
+
+  def github_payload
+    {:payload => {
+        :repository => {
+          :url => 'https://github.com/danmayer/server_responder',
+          :name => 'server_responder',
+          :owner => {
+            :name => 'danmayer'
+          }
+        },
+        :after => 'commit_hash'
+      }.to_json,
+      :api_token =>  ENV['SERVER_RESPONDER_API_KEY']
+    }
+  end
 
   def script_payload
     {:payload => {

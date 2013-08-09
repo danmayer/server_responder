@@ -1,3 +1,6 @@
+# encoding: UTF-8
+require 'fog'
+
 module ServerFiles
 
   # TODO how to allow a server to write files without exposing the shared secrets...
