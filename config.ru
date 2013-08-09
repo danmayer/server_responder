@@ -1,5 +1,5 @@
 require 'sinatra'
-require './server_responder'
+require './app'
 
 # This breaks the new passenger setup find new logging option
 #log = File.new("./log/sinatra.log", "a+")

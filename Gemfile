@@ -21,6 +21,9 @@ end
 if RbConfig::CONFIG['host_os'] =~ /darwin/
   group :development do
     gem 'thin'
+    gem 'shotgun'
     gem 'pry'
+    gem 'leader', :git => 'git://github.com/halo/leader.git'
+    gem 'foreman'
   end
 end

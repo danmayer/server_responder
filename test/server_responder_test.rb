@@ -1,6 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 require 'sinatra'
-require 'server_responder'
+require 'app'
 require 'test/unit'
 require 'rack/test'
 require 'mocha/setup'

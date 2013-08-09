@@ -2,3 +2,5 @@
 tmp/
 log/sinatra.log
 artifacts/*
+log/*
+!.gitkeep
