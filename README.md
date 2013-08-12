@@ -1,14 +1,22 @@
 Server Responder
 ===
 
-An app that runs various commands when asked. It can be spun up on EC2 servers on demand pushes results to S3 and shuts itself back down. Currently to shut down, it writes a file of the last job time and exposes that time as a api endpoint. Then a cron running on the deffered-server front end polls that endpoint and after not seeing any work done for awhile asks the server_responder app to shut down.
+A tiny app that runs various commands when asked. Mostly to pass through commands to other projects, it also can be used to run arbitrary code on a box.
+
+There are two primary uses cases:
+
+1) In conjunction with a deferred server management app. It can be spun up on EC2 servers on demand pushes results to S3 and shuts itself back down. Currently to shut down, it writes a file of the last job time and exposes that time as a api endpoint. Then a cron running on deferred-server companion app polls that endpoint. After not seeing any work done for awhile shuts down the server running server responder.
+
+2) Stand alone, for simple execution direct execution on a heroku box. This is mostly intended for embedded code example script runners.
 
 __To Run Locally__  
-`bundle exec thin -R config.ru start` or `bundle exec rackup -p 3000`
+`bundle exec thin -R config.ru start` or  
+`bundle exec rackup -p 3000` or  
+`foreman start`
 
-__Data Received__  
-  example push data:  
-  https://help.github.com/articles/post-receive-hooks
+__Example Github Data Received__  
+  
+  * [example push data](https://help.github.com/articles/post-receive-hooks)
 
 __TODO__
 
@@ -27,5 +35,5 @@ __TODO__
 
 __NOTES__
   
-  * All logging is going to the `/opt/bitnami/apache2/logs/error_log` I want to have something like sinatra log in app/logs but since moving to the newer AMI it just crashes if I try to redirect the logging.
+  * All logging for EC2 boxes is going to the `/opt/bitnami/apache2/logs/error_log` I want to have something like Sinatra log in app/logs but since moving to the newer AMI it just crashes if I try to redirect the logging.
 
