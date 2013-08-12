@@ -16,11 +16,14 @@ __TODO__
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
   * remove the server-files / server-commands dependencies… These either need to be in a gem or those commands are always run through the other endpoint…Keeping server responder really simply and dumb
   * Build a version people can run on heroku which just doesn't allow you to install bundles and gems that heroku doesn't allow, but can still be called via signed scripts
+    * This is basically done with the example page now
+    * how to handle signing, sign in deferred server? currently it calls directly
+    * if the JS is in deferred server be configured to hit directly? or pass through deferred server, and write to tmp opposed to S3
+    * on the public heroku server_responder no keys / more secure auth between systems No amazon creds
   * return results and exit status
   * improve debug / deployment cycle, local testing
   * project need to be able to setup their environment and share keys etc...?
-  * can't shutdown foreman with 9 it doesn't end all the processes it starts (sigint seems closer getting right output on server but leaves redis running)
-  * need a utility to just pass a S3 fragmant and have it cat the results for me
+  * need a utility to just pass a S3 fragment and have it cat the results for me
 
 __NOTES__
   

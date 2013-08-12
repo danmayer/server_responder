@@ -46,7 +46,7 @@ module ServerHelpers
               end
     
     record_results(results)
-    erb :index_push
+    {'results' => results}.to_json
   end
 
   def authorized_client?

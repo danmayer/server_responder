@@ -15,7 +15,7 @@ include ServerHelpers
 
 ADMIN_PASSWORD = ENV['SERVER_RESPONDER_ADMIN_PASS'] || 'default_password'
 
-use Rack::SslEnforcer unless ENV['RACK_ENV']=='test'
+use Rack::SslEnforcer if ENV['RACK_ENV']=='production'
 set :public_folder, File.dirname(__FILE__) + '/public'
 set :root, File.dirname(__FILE__)
 enable :logging
@@ -43,6 +43,10 @@ get '/' do
     @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
   end
   erb :index
+end
+
+get '/example' do
+  erb :example
 end
 
 get '/last_job' do
@@ -121,7 +125,7 @@ post '/' do
     begin
       process_request
     rescue => error
-      logger.error "error processing post to root with params #{params} error #{error.inspect}\n #{error.backtrace}"
+      logger.error "error processing post to root with params #{params.inspect} error #{error.inspect}\n #{error.backtrace}"
       raise error
     end
   end
