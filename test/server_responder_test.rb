@@ -1,6 +1,6 @@
 ENV['RACK_ENV'] = 'test'
 require 'sinatra'
-require 'app'
+require './app'
 require 'test/unit'
 require 'rack/test'
 require 'mocha/setup'
@@ -16,7 +16,7 @@ class MyAppTest < Test::Unit::TestCase
     get '/'
     assert_match 'last results', last_response.body
     assert_match 'last push', last_response.body
-    assert_match 'debug info', last_response.body
+    assert_match 'Server Responder', last_response.body
   end
 
   def test_last_job

@@ -5,6 +5,7 @@ require 'rack-ssl-enforcer'
 require 'rest_client'
 require 'systemu'
 require 'active_support/core_ext'
+require "better_errors"
 
 require './lib/server_files'
 require './lib/server_helpers'
@@ -20,6 +21,11 @@ set :public_folder, File.dirname(__FILE__) + '/public'
 set :root, File.dirname(__FILE__)
 enable :logging
 
+configure :development do
+  use BetterErrors::Middleware
+  BetterErrors.application_root = File.dirname(__FILE__)
+end
+
 helpers do
   def protected!
     unless authorized?
@@ -34,15 +40,19 @@ helpers do
   end
 end
 
-before { protected! if request.path_info == "/" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
+before { protected! if request.path_info == "/admin" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
 get '/' do
+  erb :index
+end
+
+get '/admin' do
   @results = File.exists?(tmp_results) ? File.read(tmp_results) : 'no results yet'
   if File.exists?(tmp_request)
     @last_push = File.read(tmp_request)
     @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
   end
-  erb :index
+  erb :admin
 end
 
 get '/example' do
@@ -73,7 +83,6 @@ def process_project_cmd_payload(push)
   repo_name = push['project'] rescue nil
   commit    = push['commit']
   cmd       = params['command'] || push['command'] || "churn"
-
   repo_url  = "https://github.com/#{repo_name}"
   user      = repo_name.split('/').first
   repo_name = repo_name.split('/').last
@@ -91,7 +100,6 @@ def process_project_request_payload(push)
   results_location = push['results_location']
   repo_url  = "https://github.com/#{project}"
   commit = "HEAD"
-
   logger.info "running project_request_payload #{project}"
 
   project = Project.new(:name => repo_name, :user => user_name, :url => repo_url, :commit => commit, :repos_dir => default_local_location, :results_location => results_location, :logger => logger)
@@ -99,9 +107,9 @@ def process_project_request_payload(push)
 end
 
 def process_script_payload(push)
-  logger.info "running script_payload"
   script_payload = push['script_payload']
   results_location = push['results_location']
+  logger.info "running process_script_payload #{script_payload} and #{results_location}"
   if script_payload && results_location
     script_payload = script_payload.gsub("\"","\\\"")
     reset_artifacts_directory
