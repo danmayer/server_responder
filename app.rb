@@ -10,7 +10,9 @@ require "better_errors"
 require './lib/server_files'
 require './lib/server_helpers'
 require './lib/project_commands'
+require './lib/code-signing'
 
+include CodeSigning
 include ServerFiles
 include ServerHelpers
 

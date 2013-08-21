@@ -50,7 +50,8 @@ module ServerHelpers
   end
 
   def authorized_client?
-    params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY']
+    (params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY'] ||
+     params['signature'] && params['payload'] && params['signature']==code_signature(JSON.parse(params['payload'])['script_payload']))
   end
 
   def record_params

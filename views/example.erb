@@ -1,0 +1,40 @@
+ServerResponder is alive! This is an example.
+
+<p>results:</p><br/>
+<pre id="code-results">
+</pre>
+
+<script>
+  console.log('example running');
+
+  package = {'payload': "{\"script_payload\":\"puts (5+4)\",\"results_location\":\"location\"}",
+             'results_location': 'location',
+	     'signature': 'H+2nOYC9Bw/rKvrqL6czax0AZSY='
+  }
+
+  var process_results = function(data) {
+    if(data['not_complete']) {
+      console.log('data not ready trying again');
+      setTimeout('getFutureResult(results_location);', 3000);
+    } else {
+      $('#code-results').html(data['results']);
+    }
+  }
+
+  var getFutureResult = function(results_location) {
+    $.getJSON(results_location, function(data) {
+      
+    });
+  };
+
+  $.post('/', package, function(data){
+    console.log('received future result: ' + data);
+    result_future_data = $.parseJSON(data);
+    if(result_future_data['results_location']) {
+      results_location = result_future_data['results_location']
+      getFutureResult(results_location);
+    } else {
+      process_results(result_future_data);
+    }
+  });
+</script>
