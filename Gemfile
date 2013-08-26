@@ -9,6 +9,7 @@ gem 'rest-client'
 gem 'systemu'
 gem 'i18n'
 gem 'active_support'
+gem 'airbrake'
 
 group :development, :test do
   gem 'rack-test'

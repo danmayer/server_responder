@@ -14,8 +14,6 @@ class MyAppTest < Test::Unit::TestCase
 
   def test_root
     get '/'
-    assert_match 'last results', last_response.body
-    assert_match 'last push', last_response.body
     assert_match 'Server Responder', last_response.body
   end
 

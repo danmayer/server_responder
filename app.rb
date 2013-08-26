@@ -5,12 +5,13 @@ require 'rack-ssl-enforcer'
 require 'rest_client'
 require 'systemu'
 require 'active_support/core_ext'
-require "better_errors"
+require 'airbrake'
 
 require './lib/server_files'
 require './lib/server_helpers'
 require './lib/project_commands'
 require './lib/code-signing'
+require './lib/rack_catcher'
 
 include CodeSigning
 include ServerFiles
@@ -24,9 +25,23 @@ set :root, File.dirname(__FILE__)
 enable :logging
 
 configure :development do
+  require "better_errors"
   use BetterErrors::Middleware
   BetterErrors.application_root = File.dirname(__FILE__)
 end
+
+configure :production do
+  Airbrake.configure do |config|
+    config.api_key = ENV['SR_ERRBIT_API_KEY']
+    config.host    = ENV['ERRBIT_HOST']
+    config.port    = 80
+    config.secure  = config.port == 443
+  end
+  use Airbrake::Rack
+  set :raise_errors, true
+  use Rack::Catcher
+end
+
 
 helpers do
   def protected!
