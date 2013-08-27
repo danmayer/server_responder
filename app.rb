@@ -59,6 +59,10 @@ end
 
 before { protected! if request.path_info == "/admin" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
+get 'test_exception' do
+  raise "error test"
+end
+
 get '/' do
   erb :index
 end
