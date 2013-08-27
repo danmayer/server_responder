@@ -17,6 +17,7 @@ __To Run Locally__
 __Example Github Data Received__  
   
   * [example push data](https://help.github.com/articles/post-receive-hooks)
+  * to trigger an exception curl --data "api_token=XXX" "https://ec2-54-224-26-215.compute-1.amazonaws.com" --insecure
 
 __TODO__
 
