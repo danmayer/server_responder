@@ -92,7 +92,7 @@ def process_github_hook_commit(push)
   commit_key   = "#{project_key}/#{after_commit}"
   logger.info("process_github_hook_commit repo_url: #{repo_url}")  
 
-  project = Project.new(:name => repo_name, :user => user, :url => repo_url, :commit => after_commit, :repos_dir => default_local_location, :results_location => nil, push, :logger => logger)
+  project = Project.new(:name => repo_name, :user => user, :url => repo_url, :commit => after_commit, :repos_dir => default_local_location, :results_location => nil, :push => push, :logger => logger)
   project.process_github_hook
 end
 
