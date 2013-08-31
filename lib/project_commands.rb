@@ -35,10 +35,10 @@ class Project
 
   def create_or_update_repo
     if File.exists?(repo_location)
-      logger.info("update repo")
+      #logger.info("update repo")
       `cd #{repo_location}; git pull`
     else
-      logger.info("create repo")
+      #logger.info("create repo")
       `cd #{repos_dir}; git clone #{repo_url}`
     end
   end
@@ -57,30 +57,30 @@ class Project
         ENV['DOCUMENT_ROOT']=nil
         ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
         full_cmd = "cd #{repo_location}; LC_ALL=en_US.UTF-8 LC_CTYPE=en_US.UTF-8 PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log"
-        logger.info "running: #{full_cmd}"
+        #logger.info "running: #{full_cmd}"
         exec(full_cmd)
       end
 
       puts "running child is #{cid}"
       begin
-        logger.info "sleep while app boots"
+        #logger.info "sleep while app boots"
         sleep(7)
-        logger.info "waking up to hit app"
+        #logger.info "waking up to hit app"
         results = RestClient.post "http://localhost:#{PAYLOAD_PORT}#{project_request}", {}
-        logger.error "results: #{results}"
+        #logger.error "results: #{results}"
         write_file(results_location,results)
       rescue => error
         error_msg = "error hitting app #{error}"
-        logger.error error_msg
+        #logger.error error_msg
         error_trace = "error trace #{error.backtrace.join("\n")}"
-        logger.error error_trace
+        #logger.error error_trace
         write_file(results_location, "#{error_msg}\n #{error_trace}")
       ensure
         begin
-          logger.info "killing child processes"
+          #logger.info "killing child processes"
           Process.kill '-SIGINT', cid # kill the daemon
         rescue Errno::ESRCH
-          logger.error "error killing process likely crashed when running"
+          #logger.error "error killing process likely crashed when running"
         end
       end
     end
@@ -110,7 +110,7 @@ class Project
           `BUNDLE_GEMFILE=#{repo_location}/Gemfile && bundle install`
         end
         full_cmd = "BUNDLE_GEMFILE=#{repo_location}/Gemfile && #{cmd}"
-        logger.info "dir: #{repo_location} && running: #{full_cmd}"
+        #logger.info "dir: #{repo_location} && running: #{full_cmd}"
         results = `#{full_cmd} 2>&1`
       end
     else
