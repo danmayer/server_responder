@@ -16,7 +16,7 @@ class Project
     results_location = opts[:results_location]
     logger           = opts[:logger]
     if REQUIRED_OPTIONS.any?{|opt| self.send(opt).nil? }
-      raise "missing a required option (#{REQUIRED_OPTIONS}) missing: #{REQUIRED_OPTIONS.select?{|opt| self.send(opt).nil? }}"
+      raise "missing a required option (#{REQUIRED_OPTIONS}) missing: #{REQUIRED_OPTIONS.select{|opt| self.send(opt).nil? }}"
     end
   end
 
