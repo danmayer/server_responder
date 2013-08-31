@@ -124,7 +124,7 @@ class Project
       :results     => results
     }
     write_file(commit_key,json_results.to_json)
-    write_commits(project_key, after_commit, commit_key, push)
+    write_commits(project_key, commit, commit_key, push)
     RestClient.post CLIENT_APP+"/request_complete",
     {:project_key => project_key, :commit_key => commit_key}
     json_results
