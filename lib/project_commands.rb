@@ -2,10 +2,11 @@
 class Project
   include ServerFiles
 
-  REQUIRED_OPTIONS = [:name, :url, :commit, :user, :repos_dir, :results_location, :logger]
+  OPTIONAL_OPTIONS = [:results_location]
+  REQUIRED_OPTIONS = [:name, :url, :commit, :user, :repos_dir, :logger]
   PAYLOAD_PORT = 4005
 
-  attr_accessor *REQUIRED_OPTIONS
+  attr_accessor *(REQUIRED_OPTIONS+OPTIONAL_OPTIONS)
 
   def initialize(opts = {})
     name             = opts[:name]
