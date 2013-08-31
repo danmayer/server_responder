@@ -15,7 +15,7 @@ class Project
     user             = opts[:user]
     repos_dir        = opts[:repos_dir]
     results_location = opts[:results_location]
-    logger           = opts[:logger]
+    logger           = opts[:logger] ||= Logger.new("sinatra.log")
     if REQUIRED_OPTIONS.any?{|opt| opts[opt].nil? }
       raise "missing a required option (#{REQUIRED_OPTIONS}) missing: #{REQUIRED_OPTIONS.select{|opt| opts[opt].nil? }}"
     end
