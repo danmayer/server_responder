@@ -15,8 +15,8 @@ class Project
     repos_dir        = opts[:repos_dir]
     results_location = opts[:results_location]
     logger           = opts[:logger]
-    if REQUIRED_OPTIONS.any?{|opt| self.send(:opt).nil? }
-      raise "missing a required option (#{REQUIRED_OPTIONS}) missing: #{REQUIRED_OPTIONS.select?{|opt| self.call(:opt).nil? }}"
+    if REQUIRED_OPTIONS.any?{|opt| self.send(opt).nil? }
+      raise "missing a required option (#{REQUIRED_OPTIONS}) missing: #{REQUIRED_OPTIONS.select?{|opt| self.send(opt).nil? }}"
     end
   end
 
