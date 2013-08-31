@@ -1,7 +1,7 @@
 Server Responder
 ===
 
-A tiny app that runs various commands when asked. Mostly to pass through commands to other projects, it also can be used to run arbitrary code on a box.
+A tiny app that runs various commands when asked. Mostly it processes commands for other projects, it also can be used to run arbitrary code on a box. It tries to be very simple and lightweight so it can be configured on a 'throw away' cloud boxes and not require sensitive information or settings.
 
 There are two primary uses cases:
 
