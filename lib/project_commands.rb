@@ -22,7 +22,7 @@ class Project
   end
 
   def project_key
-    "#{user}/#{repo_name}"
+    "#{user}/#{name}"
   end
 
   def commit_key
