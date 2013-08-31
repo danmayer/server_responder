@@ -39,7 +39,7 @@ class Project
       `cd #{repo_location}; git pull`
     else
       #logger.info("create repo")
-      `cd #{repos_dir}; git clone #{repo_url}`
+      `cd #{repos_dir}; git clone #{url}`
     end
   end
   
