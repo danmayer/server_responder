@@ -90,9 +90,9 @@ class Project
   def process_cmd(cmd)
     create_or_update_repo
     if commit=='history'
-      ProjectCommands.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
+      Project.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     else
-      ProjectCommands.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
+      Project.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     end
   end
 
