@@ -42,6 +42,7 @@ configure :production do
   set :raise_errors, true
 end
 
+logger ||= Logger.new("sinatra.log")
 
 helpers do
   def protected!
