@@ -157,10 +157,10 @@ class Project
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     if File.exists?(repo_location)
       puts ("update repo")
-      `cd #{repo_location}; git pull`
+      `cd #{default_local_location}; git pull`
     else
       puts("create repo")
-      `cd #{local_repos}; git clone #{repo_url}`
+      `cd #{default_local_location}; git clone #{repo_url}`
     end
 
     full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
