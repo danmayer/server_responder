@@ -5,6 +5,7 @@ class Project
   OPTIONAL_OPTIONS = [:results_location, :push]
   REQUIRED_OPTIONS = [:name, :url, :commit, :user, :repos_dir, :logger]
   PAYLOAD_PORT = 4005
+  CLIENT_APP = "https://git-hook-responder.herokuapp.com"
 
   attr_accessor *(REQUIRED_OPTIONS+OPTIONAL_OPTIONS)
 
@@ -126,8 +127,7 @@ class Project
     }
     write_file(commit_key,json_results.to_json)
     write_commits(project_key, commit, commit_key, push)
-    RestClient.post CLIENT_APP+"/request_complete",
-    {:project_key => project_key, :commit_key => commit_key}
+    RestClient.post CLIENT_APP+"/request_complete", {:project_key => project_key, :commit_key => commit_key}
     json_results
   end
 
