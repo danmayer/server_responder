@@ -37,11 +37,11 @@ class Project
 
   def create_or_update_repo
     if File.exists?(repo_location)
-      #logger.info("update repo")
+      logger.info("update repo")
       puts("update repo")
       `cd #{repo_location}; git pull`
     else
-      #logger.info("create repo")
+      logger.info("create repo")
       puts "create #{url} in #{repos_dir}"
       `cd #{repos_dir}; git clone #{url}`
     end
