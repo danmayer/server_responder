@@ -5,7 +5,7 @@ class Project
   OPTIONAL_OPTIONS = [:results_location, :push]
   REQUIRED_OPTIONS = [:name, :url, :commit, :user, :repos_dir, :logger]
   PAYLOAD_PORT = 4005
-  CLIENT_APP = "https://git-hook-responder.herokuapp.com"
+  CLIENT_APP = "http://git-hook-responder.herokuapp.com"
 
   attr_accessor *(REQUIRED_OPTIONS+OPTIONAL_OPTIONS)
 
@@ -38,9 +38,11 @@ class Project
   def create_or_update_repo
     if File.exists?(repo_location)
       #logger.info("update repo")
+      puts("update repo")
       `cd #{repo_location}; git pull`
     else
       #logger.info("create repo")
+      puts "create #{url} in #{repos_dir}"
       `cd #{repos_dir}; git clone #{url}`
     end
   end
