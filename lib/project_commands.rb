@@ -93,7 +93,7 @@ class Project
     if commit=='history'
       Project.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     else
-      Project.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
+      Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
     end
   end
 
