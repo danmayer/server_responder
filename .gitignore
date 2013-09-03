@@ -4,3 +4,4 @@ log/sinatra.log
 artifacts/*
 log/*
 !.gitkeep
+sinatra.log
