@@ -93,6 +93,11 @@ class Project
     create_or_update_repo
     if commit=='history'
       Project.project_history_for_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
+    elsif commit.match(',')
+      commits = commit.split(',')
+      commits.each do |commit|
+        Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
+      end
     else
       Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
     end
@@ -132,7 +137,7 @@ class Project
   end
 
   def self.project_history_for_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-    from_date  = 60.days.ago.to_date
+    from_date  = 90.days.ago.to_date
     until_date = Date.today
     completed_commits = []
 
@@ -148,6 +153,7 @@ class Project
         current_results_location = results_location.gsub('_history_',"_#{current_git_commit}_")
         
         project_command(project_key, repo_location, default_local_location, repo_url, current_git_commit, current_commit_key, cmd, current_results_location)
+        #TODO this needs to be a passed in option for callback url
         RestClient.post("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}", :rechurn => 'false')
       end
     end
