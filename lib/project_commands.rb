@@ -95,7 +95,10 @@ class Project
       Project.project_history_for_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
     elsif commit.match(',')
       commits = commit.split(',')
-      commits.each do |commit|
+      commits.each do |current_git_commit|
+        current_commit_key       = "#{project_key}/#{current_git_commit}"
+        current_results_location = results_location.gsub("_#{commit}_","_#{current_git_commit}_")
+        
         Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
       end
     else

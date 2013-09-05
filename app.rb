@@ -100,7 +100,7 @@ def process_project_cmd_payload(push)
   results_location = push['results_location']
   repo_name = push['project'] rescue nil
   commit    = push['commit']
-  cmd       = params['command'] || push['command'] || "churn"
+  cmd       = params['command'] || push['command'] || "churn --yaml"
   repo_url  = "https://github.com/#{repo_name}"
   user      = repo_name.split('/').first
   repo_name = repo_name.split('/').last
