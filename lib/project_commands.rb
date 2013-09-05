@@ -99,7 +99,7 @@ class Project
         current_commit_key       = "#{project_key}/#{current_git_commit}"
         current_results_location = results_location.gsub("_#{commit}_","_#{current_git_commit}_")
         
-        Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
+        Project.project_command(project_key, repo_location, default_local_location, url, current_git_commit, current_commit_key, cmd, current_results_location)
       end
     else
       Project.project_command(project_key, repo_location, default_local_location, url, commit, commit_key, cmd, results_location)
