@@ -146,7 +146,7 @@ class Project
 
     #from https://github.com/metricfu/metric_fu/issues/107#issuecomment-21747147
     (from_date..until_date).each do |date|
-      git_log_cmd = "cd #{repo_location}; git checkout master > /dev/null; git reset --hard HEAD > /dev/null; git log --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
+      git_log_cmd = "cd #{repo_location}; git log origin/master HEAD --max-count=1 --before=#{date} --after=#{date - 1} --format='%H'"
       puts "git_log_cmd: #{git_log_cmd}"
       current_git_commit = `#{git_log_cmd}`.to_s.strip
       puts "commit #{current_git_commit} for date #{date}"
