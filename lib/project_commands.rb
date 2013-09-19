@@ -166,7 +166,7 @@ class Project
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     if File.exists?(repo_location)
       puts ("update repo")
-      `cd #{default_local_location}; git pull`
+      `cd #{default_local_location}; git checkout master; git pull`
     else
       puts("create repo")
       `cd #{default_local_location}; git clone #{repo_url}`
