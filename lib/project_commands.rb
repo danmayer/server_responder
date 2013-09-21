@@ -37,8 +37,8 @@ class Project
 
   def create_or_update_repo
     if File.exists?(repo_location)
-      logger.info("update repo")
-      `cd #{repo_location}; git pull`
+      logger.info("update repo: cd #{repo_location}; git pull origin master")
+      `cd #{repo_location}; git pull origin master`
     else
       logger.info("create repo #{url} in #{repos_dir}")
       `cd #{repos_dir}; git clone #{url}`
@@ -166,7 +166,7 @@ class Project
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     if File.exists?(repo_location)
       puts ("update repo")
-      `cd #{default_local_location}; git checkout master; git pull`
+      `cd #{default_local_location}; git checkout master; git pull origin master`
     else
       puts("create repo")
       `cd #{default_local_location}; git clone #{repo_url}`
