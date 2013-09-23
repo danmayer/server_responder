@@ -157,7 +157,13 @@ class Project
         
         project_command(project_key, repo_location, default_local_location, repo_url, current_git_commit, current_commit_key, cmd, current_results_location)
         #TODO this needs to be a passed in option for callback url
-        RestClient.post("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}", :rechurn => 'false')
+        attempts = 0
+        begin
+          RestClient.post("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}", :rechurn => 'false')
+        rescue URI::InvalidURIError
+          attempts +=1 
+          retry if attempts < 3
+        end
       end
     end
     {:project_key => project_key, :commit_key => commit_key}
