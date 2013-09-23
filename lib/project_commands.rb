@@ -160,9 +160,9 @@ class Project
         attempts = 0
         begin
           RestClient.post("http://churn.picoappz.com/#{project_key}/commits/#{current_git_commit}", :rechurn => 'false')
-        rescue URI::InvalidURIError
+        rescue URI::InvalidURIError, RestClient::InternalServerError
           attempts +=1 
-          retry if attempts < 3
+          retry if attempts <= 3
         end
       end
     end
