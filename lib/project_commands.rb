@@ -53,17 +53,19 @@ class Project
                   logger.info("create repo #{url} in #{repos_dir}: #{cmd}")
                   `#{cmd}`
                 end
-    
+      
       exit_status = $?.exitstatus
-      raise "git cmd error" if exit_status > 0 && retries <= 3
+      raise "git cmd error" if exit_status > 0
     rescue
-      `cd #{repo_location}; git status`
-      git_exists_status = $?.exitstatus
-      if git_exists_status > 0
-        `rm -rf #{repo_location}`
-      end
       retries +=1
-      retry
+      if retries <= 3
+        `cd #{repo_location}; git status`
+        git_exists_status = $?.exitstatus
+        if git_exists_status > 0
+          `rm -rf #{repo_location}`
+        end
+        retry
+      end
     end
 
     json_results = {
