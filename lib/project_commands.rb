@@ -36,10 +36,10 @@ class Project
   end
 
   def create_or_update_repo
-    Project.create_or_update_repo(repos_dir, repo_location, url, repos_dir)
+    Project.create_or_update_repo(repos_dir, repo_location, url)
   end
 
-  def self.create_or_update_repo(repos_dir, repo_location, url, repos_dir)
+  def self.create_or_update_repo(repos_dir, repo_location, url)
     cmd = ''
     exit_status = 0
     retries = 0
@@ -198,7 +198,7 @@ class Project
   end
 
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-    json_results = create_or_update_repo(default_local_location, repo_location, url, repos_dir)
+    json_results = create_or_update_repo(default_local_location, repo_location, url)
 
     if json_results[:results] > 0
       #results package already built for failure skip it
