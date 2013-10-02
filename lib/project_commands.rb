@@ -48,16 +48,16 @@ class Project
     exit_status = 0
     results = ''
 
-    logger.info "shared location #{repos_dir} specific #{repo_location}, url #{url}"
+    puts "shared location #{repos_dir} specific #{repo_location}, url #{url}"
     retries = 0
     begin
       results = if File.exists?(repo_location)
                   cmd = "cd #{repo_location}; git checkout master; git pull origin master"
-                  logger.info("update repo: #{cmd}")
+                  puts("update repo: #{cmd}")
                   `#{cmd}`
                 else
                   cmd = "cd #{repos_dir}; git clone #{url}"
-                  logger.info("create repo #{url} in #{repos_dir}: #{cmd}")
+                  puts("create repo #{url} in #{repos_dir}: #{cmd}")
                   `#{cmd}`
                 end
       
@@ -66,11 +66,11 @@ class Project
     rescue
       retries +=1
       if retries <= 3
-        logger.info("create_or_update_repo error on: #{cmd}, retrying")
+        puts("create_or_update_repo error on: #{cmd}, retrying")
         `cd #{repo_location}; git status`
         git_exists_status = $?.exitstatus
         if git_exists_status > 0
-          logger.info("clearing repo: #{repo_location}")
+          puts("clearing repo: #{repo_location}")
           `rm -rf #{repo_location}`
         end
         retry
