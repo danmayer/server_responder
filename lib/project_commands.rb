@@ -36,13 +36,41 @@ class Project
   end
 
   def create_or_update_repo
-    if File.exists?(repo_location)
-      logger.info("update repo: cd #{repo_location}; git pull origin master")
-      `cd #{repo_location}; git pull origin master`
-    else
-      logger.info("create repo #{url} in #{repos_dir}")
-      `cd #{repos_dir}; git clone #{url}`
+    Project.create_or_update_repo(repos_dir, repo_location, url, repos_dir)
+  end
+
+  def self.create_or_update_repo(repos_dir, repo_location, url, repos_dir)
+    cmd = ''
+    exit_status = 0
+    retries = 0
+    begin
+      results = if File.exists?(repo_location)
+                  cmd = "cd #{repo_location}; git checkout master; git pull origin master"
+                  logger.info("update repo: #{cmd}")
+                  `#{cmd}`
+                else
+                  cmd = "cd #{repos_dir}; git clone #{url}"
+                  logger.info("create repo #{url} in #{repos_dir}: #{cmd}")
+                  `#{cmd}`
+                end
+    
+      exit_status = $?.exitstatus
+      if exit_status > 0 && retries <= 3
+        `cd #{repo_location}; git status`
+        git_exists_status = $?.exitstatus
+        if git_exists_status > 0
+          `rm -rf #{repo_location}`
+        end
+        retries +=1
+        retry
+      end
     end
+
+    json_results = {
+      :cmd_run     => cmd,
+      :exit_status => exit_status,
+      :results     => results
+    }
   end
   
   def process_request(project_request)
@@ -170,28 +198,27 @@ class Project
   end
 
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
-    if File.exists?(repo_location)
-      puts ("update repo")
-      `cd #{default_local_location}; git checkout master; git pull origin master`
+    json_results = create_or_update_repo(default_local_location, repo_location, url, repos_dir)
+
+    if json_results[:results] > 0
+      #results package already built for failure skip it
     else
-      puts("create repo")
-      `cd #{default_local_location}; git clone #{repo_url}`
+      full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
+      puts ("running: #{full_command}")
+      results = `#{full_command}`
+      #temporary hack for the empty results not creating files / valid output
+      if results==''
+        results = "cmd #{cmd} completed with no output"
+      end
+      puts "results: #{results}"
+      exit_status = $?.exitstatus
+      json_results = {
+        :cmd_run     => cmd,
+        :exit_status => exit_status,
+        :results     => results
+      }
     end
 
-    full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
-    puts ("running: #{full_command}")
-    results = `#{full_command}`
-    #temporary hack for the empty results not creating files / valid output
-    if results==''
-      results = "cmd #{cmd} completed with no output"
-    end
-    puts "results: #{results}"
-    exit_status = $?.exitstatus
-    json_results = {
-      :cmd_run     => cmd,
-      :exit_status => exit_status,
-      :results     => results
-    }
     write_file(commit_key,json_results.to_json)
     write_file(results_location,json_results.to_json)
     
