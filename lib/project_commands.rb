@@ -61,9 +61,11 @@ class Project
     rescue
       retries +=1
       if retries <= 3
+        logger.info("create_or_update_repo error on: #{cmd}, retrying")
         `cd #{repo_location}; git status`
         git_exists_status = $?.exitstatus
         if git_exists_status > 0
+          logger.info("clearing repo: #{repo_location}")
           `rm -rf #{repo_location}`
         end
         retry
