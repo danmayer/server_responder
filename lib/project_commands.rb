@@ -55,15 +55,15 @@ class Project
                 end
     
       exit_status = $?.exitstatus
-      if exit_status > 0 && retries <= 3
-        `cd #{repo_location}; git status`
-        git_exists_status = $?.exitstatus
-        if git_exists_status > 0
-          `rm -rf #{repo_location}`
-        end
-        retries +=1
-        retry
+      raise "git cmd error" if exit_status > 0 && retries <= 3
+    rescue
+      `cd #{repo_location}; git status`
+      git_exists_status = $?.exitstatus
+      if git_exists_status > 0
+        `rm -rf #{repo_location}`
       end
+      retries +=1
+      retry
     end
 
     json_results = {
