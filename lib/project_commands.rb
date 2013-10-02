@@ -39,15 +39,16 @@ class Project
     Project.create_or_update_repo(repos_dir, repo_location, url)
   end
 
-  def self.logger
-    @@logger ||= Logger.new("log/sinatra.log")
-  end
+  # def self.logger
+  #   @@logger ||= Logger.new("log/sinatra.log")
+  # end
 
   def self.create_or_update_repo(repos_dir, repo_location, url)
     cmd = ''
     exit_status = 0
     results = ''
 
+    logger.info "shared location #{repos_dir} specific #{repo_location}, url #{url}"
     retries = 0
     begin
       results = if File.exists?(repo_location)
