@@ -39,6 +39,10 @@ class Project
     Project.create_or_update_repo(repos_dir, repo_location, url)
   end
 
+  def self.logger
+    Logger.new("log/sinatra.log")
+  end
+
   def self.create_or_update_repo(repos_dir, repo_location, url)
     cmd = ''
     exit_status = 0
