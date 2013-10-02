@@ -40,7 +40,7 @@ class Project
   end
 
   def self.logger
-    Logger.new("log/sinatra.log")
+    @@logger ||= Logger.new("log/sinatra.log")
   end
 
   def self.create_or_update_repo(repos_dir, repo_location, url)
