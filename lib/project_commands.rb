@@ -42,6 +42,8 @@ class Project
   def self.create_or_update_repo(repos_dir, repo_location, url)
     cmd = ''
     exit_status = 0
+    results = ''
+
     retries = 0
     begin
       results = if File.exists?(repo_location)
@@ -68,11 +70,12 @@ class Project
       end
     end
 
-    json_results = {
+    cmd_results = {
       :cmd_run     => cmd,
       :exit_status => exit_status,
       :results     => results
     }
+    cmd_results
   end
   
   def process_request(project_request)
