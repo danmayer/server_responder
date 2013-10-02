@@ -205,7 +205,7 @@ class Project
   def self.project_command(project_key, repo_location, default_local_location, repo_url, commit, commit_key, cmd, results_location)
     json_results = create_or_update_repo(default_local_location, repo_location, repo_url)
 
-    if json_results[:results] > 0
+    if json_results[:exit_status] > 0
       #results package already built for failure skip it
     else
       full_command = "cd #{repo_location}; git checkout #{commit}; #{cmd}"
