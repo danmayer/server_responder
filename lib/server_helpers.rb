@@ -9,6 +9,21 @@ module ServerHelpers
     "tmp/last_results.txt"
   end
 
+  def last_job_time
+    File.exists?(tmp_request) ? File.mtime(tmp_request) : Time.now
+  end
+
+  def last_results
+    File.exists?(tmp_results) ? File.read(tmp_results) : 'no results yet'
+  end
+
+  def last_push_request
+    if File.exists?(tmp_request)
+      @last_push = File.read(tmp_request)
+      @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
+    end
+  end
+
   def upload_files(results_location)
     artifact_files = Dir.glob("./artifacts/*")
     logger.info "files uploading: #{artifact_files.inspect}"

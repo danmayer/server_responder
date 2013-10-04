@@ -38,27 +38,44 @@ class Project
   def create_or_update_repo
     Project.create_or_update_repo(repos_dir, repo_location, url)
   end
+  
+  def self.logger
+    @@logger ||= env['rack.logger']
+  end
+  
+  def self.remove_broken_repo(repo_location)
+    `cd #{repo_location}; git status`
+    git_exists_status = $?.exitstatus
+    if git_exists_status > 0
+      puts("clearing bad repo dir: #{repo_location}")
+      `rm -rf #{repo_location}`
+    end
+  end
 
-  # def self.logger
-  #   @@logger ||= Logger.new("log/sinatra.log")
-  # end
+  def self.clone_project_repo(repos_dir, url)
+    cmd = "cd #{repos_dir}; git clone #{url}"
+    puts("create repo #{url} in #{repos_dir}: #{cmd}")
+    `#{cmd}`
+  end
+
+  def self.update_project_repo(repo_location)
+    cmd = "cd #{repo_location}; git checkout master; git pull origin master"
+    puts("update repo: #{cmd}")
+    `#{cmd}`
+  end
 
   def self.create_or_update_repo(repos_dir, repo_location, url)
     cmd = ''
     exit_status = 0
     results = ''
-
-    puts "shared location #{repos_dir} specific #{repo_location}, url #{url}"
     retries = 0
+    
+    puts "shared location #{repos_dir} specific #{repo_location}, url #{url}"
     begin
       results = if File.exists?(repo_location)
-                  cmd = "cd #{repo_location}; git checkout master; git pull origin master"
-                  puts("update repo: #{cmd}")
-                  `#{cmd}`
+                  update_project_repo(repo_location)
                 else
-                  cmd = "cd #{repos_dir}; git clone #{url}"
-                  puts("create repo #{url} in #{repos_dir}: #{cmd}")
-                  `#{cmd}`
+                  clone_project_repo(repos_dir, url)
                 end
       
       exit_status = $?.exitstatus
@@ -67,24 +84,25 @@ class Project
       retries +=1
       if retries <= 3
         puts("create_or_update_repo error on: #{cmd}, retrying")
-        `cd #{repo_location}; git status`
-        git_exists_status = $?.exitstatus
-        if git_exists_status > 0
-          puts("clearing repo: #{repo_location}")
-          `rm -rf #{repo_location}`
-        end
+        remove_broken_repo(repo_location)
         retry
       end
     end
-
-    cmd_results = {
-      :cmd_run     => cmd,
+    
+    {:cmd_run => cmd,
       :exit_status => exit_status,
-      :results     => results
-    }
-    cmd_results
+      :results => results}
   end
   
+  def reset_request_env
+    ENV['REQUEST_METHOD']=nil
+    ENV['REQUEST_URI']=nil
+    ENV['QUERY_STRING']=nil
+    ENV['PWD']=nil
+    ENV['DOCUMENT_ROOT']=nil
+    ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
+  end
+
   def process_request(project_request)
     create_or_update_repo
 
@@ -92,12 +110,7 @@ class Project
     Dir.chdir(repo_location) do
       
       cid = fork do
-        ENV['REQUEST_METHOD']=nil
-        ENV['REQUEST_URI']=nil
-        ENV['QUERY_STRING']=nil
-        ENV['PWD']=nil
-        ENV['DOCUMENT_ROOT']=nil
-        ENV['BUNDLE_GEMFILE']="#{repo_location}/Gemfile"
+        reset_request_env
         full_cmd = "cd #{repo_location}; LC_ALL=en_US.UTF-8 LC_CTYPE=en_US.UTF-8 PORT=#{PAYLOAD_PORT} foreman start > /opt/bitnami/apps/server_responder/log/foreman.log"
         logger.info "running: #{full_cmd}"
         exec(full_cmd)

@@ -65,11 +65,8 @@ get '/' do
 end
 
 get '/admin' do
-  @results = File.exists?(tmp_results) ? File.read(tmp_results) : 'no results yet'
-  if File.exists?(tmp_request)
-    @last_push = File.read(tmp_request)
-    @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
-  end
+  @results = last_results
+  @last_push = last_push_request
   erb :admin
 end
 
@@ -78,12 +75,10 @@ get '/example' do
 end
 
 get '/last_job' do
-  last_job_time = File.exists?(tmp_request) ? File.mtime(tmp_request) : Time.now
   {:last_time => last_job_time}.to_json
 end
 
 def process_github_hook_commit(push)
-  local_repos = default_local_location
   repo_url = push['repository']['url'] rescue nil
   repo_name = push['repository']['name'] rescue nil
   user = push['repository']['owner']['name'] rescue nil
