@@ -6,6 +6,7 @@ require 'rest_client'
 require 'systemu'
 require 'active_support/core_ext'
 require 'airbrake'
+require 'logstash-logger'
 
 require './lib/server_files'
 require './lib/server_helpers'
@@ -42,7 +43,11 @@ configure :production do
   set :raise_errors, true
 end
 
-logger ||= Logger.new("sinatra.log")
+logger ||= if ENV['LOGGER_HOST']
+             logger = LogStashLogger.new(ENV['LOGGER_HOST'], 49175, :tcp)
+           else
+             Logger.new("sinatra.log")
+           end
 
 helpers do
   def protected!

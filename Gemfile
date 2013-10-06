@@ -10,6 +10,7 @@ gem 'systemu'
 gem 'i18n'
 gem 'active_support'
 gem 'airbrake'
+gem 'logstash-logger'
 
 group :development, :test do
   gem 'rack-test'
