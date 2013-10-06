@@ -55,6 +55,9 @@ GEM
     jruby-pageant (1.1.1)
     json (1.7.5)
     json_pure (1.8.0)
+    logstash-event (1.2.02)
+    logstash-logger (0.4.0)
+      logstash-event (~> 1.2)
     main (5.2.0)
       arrayfields (>= 4.7.4)
       chronic (>= 0.6.2)
@@ -118,6 +121,7 @@ DEPENDENCIES
   i18n
   json
   leader!
+  logstash-logger
   mocha
   pry
   rack-ssl-enforcer
