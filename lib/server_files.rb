@@ -22,6 +22,15 @@ module ServerFiles
       ''
     end
   end
+
+  def destroy_old_files
+    files = connection.directories.get('deferred-server', prefix: 'script_results').files
+    files.each do |file|
+      if file.last_modified < 10.days.ago
+        file.destroy
+      end
+    end
+  end
   
   def write_commits(project_key, after_commit, commit_key, push)
     commits_data = get_file(project_key)
