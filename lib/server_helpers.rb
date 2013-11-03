@@ -1,25 +1,17 @@
 # encoding: UTF-8
 module ServerHelpers
-
-  def tmp_request
-    "tmp/last_request.txt"
-  end
   
-  def tmp_results
-    "tmp/last_results.txt"
-  end
-
   def last_job_time
-    File.exists?(tmp_request) ? File.mtime(tmp_request) : Time.now
+    @last_accessed || Time.now
   end
 
   def last_results
-    File.exists?(tmp_results) ? File.read(tmp_results) : 'no results yet'
+    @tmp_results || 'no results yet'
   end
 
   def last_push_request
-    if File.exists?(tmp_request)
-      @last_push = File.read(tmp_request)
+    if @tmp_request
+      @last_push = tmp_request
       @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
     end
   end
@@ -69,12 +61,15 @@ module ServerHelpers
      params['signature'] && params['payload'] && params['signature']==code_signature(JSON.parse(params['payload'])['script_payload']))
   end
 
+  private
+
   def record_params
-    File.open(tmp_request, 'w') {|f| f.write(params.to_json) }
+    @last_accessed = Time.now
+    @tmp_request = params.to_json
   end
 
   def record_results(results)
-    File.open(tmp_results, 'w') {|f| f.write(results) }
+    @tmp_results = results
   end
 
 end
