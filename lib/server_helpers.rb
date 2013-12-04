@@ -5,7 +5,7 @@ module ServerHelpers
   @@tmp_request = nil
 
   def last_job_time
-    @@last_accessed || Time.now
+    @@last_accessed ||= Time.now
   end
 
   def last_results
