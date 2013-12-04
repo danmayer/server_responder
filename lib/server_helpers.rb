@@ -1,18 +1,21 @@
 # encoding: UTF-8
 module ServerHelpers
-  
+  @@last_accessed = nil
+  @@tmp_results = nil
+  @@tmp_request = nil
+
   def last_job_time
-    @last_accessed || Time.now
+    @@last_accessed || Time.now
   end
 
   def last_results
-    @tmp_results || 'no results yet'
+    @@tmp_results || 'no results yet'
   end
 
   def last_push_request
-    if @tmp_request
-      @last_push = tmp_request
-      @last_push = @last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
+    if @@tmp_request
+      last_push = tmp_request
+      last_push = last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
     end
   end
 
@@ -64,12 +67,12 @@ module ServerHelpers
   private
 
   def record_params
-    @last_accessed = Time.now
-    @tmp_request = params.to_json
+    @@last_accessed = Time.now
+    @@tmp_request = params.to_json
   end
 
   def record_results(results)
-    @tmp_results = results
+    @@tmp_results = results
   end
 
 end
