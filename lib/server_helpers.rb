@@ -42,23 +42,6 @@ module ServerHelpers
     ENV['LOCAL_REPOS'] || "/opt/bitnami/apps/projects/"
   end
 
-  def process_request
-    record_params
-    push = JSON.parse(params['payload'])
-    results = if push['script_payload']
-                process_script_payload(push)
-              elsif(push['project'] && push['project_request'])
-                process_project_request_payload(push)
-              elsif(push['project'] && push['command'])
-                process_project_cmd_payload(push)
-              else
-                process_github_hook_commit(push)
-              end
-    
-    record_results(results)
-    {'results' => results}.to_json
-  end
-
   def authorized_client?
     (params['api_token'] && params['api_token']==ENV['SERVER_RESPONDER_API_KEY'] ||
      params['signature'] && params['payload'] && params['signature']==code_signature(JSON.parse(params['payload'])['script_payload']))

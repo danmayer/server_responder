@@ -143,6 +143,24 @@ def process_script_payload(push)
   end
 end
 
+
+def process_request
+  record_params
+  push = JSON.parse(params['payload'])
+  results = if push['script_payload']
+              process_script_payload(push)
+            elsif(push['project'] && push['project_request'])
+              process_project_request_payload(push)
+            elsif(push['project'] && push['command'])
+              process_project_cmd_payload(push)
+            else
+              process_github_hook_commit(push)
+            end
+  
+  record_results(results)
+  {'results' => results}.to_json
+end
+
 post '/' do
   unless authorized_client?
     logger.error "received a invalid request"
