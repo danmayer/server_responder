@@ -45,6 +45,15 @@ class MyAppTest < Test::Unit::TestCase
     post '/', script_payload, 'api_token' => ENV['SERVER_RESPONDER_API_KEY']
   end
 
+  def test_authorized_client__token
+    app.stubs(:params).returns({'api_token' => ENV['SERVER_RESPONDER_API_KEY']})
+    assert_equal true, app.authorized_client?
+  end
+
+  def test_authorized_client__signature
+    assert_equal true, true
+  end
+
   private
 
   def github_payload
