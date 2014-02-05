@@ -10,8 +10,9 @@ RUN \
   rm -fr /var/apps/server_responder/.git ;\
   cd /var/apps/server_responder ;\
   bundle install;\
+  . /.profile && cd /var/apps/server_responder && bundle exec rake;\
 # END RUN
 
-CMD . /.profile && cd /var/apps/server_responder && bundle exec rake && bundle exec rackup -p 8999
+CMD . /.profile && cd /var/apps/server_responders && bundle exec rackup -p 8999
 
 EXPOSE 8999
