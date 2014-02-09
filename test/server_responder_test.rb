@@ -1,19 +1,6 @@
-ENV['RACK_ENV'] = 'test'
-require 'sinatra'
-require './app'
-require 'test/unit'
-require 'rack/test'
-require 'mocha/setup'
+require_relative 'test_helper'
 
-#this var is required for testing
-ENV['SERVER_RESPONDER_API_KEY'] ||= 'tester'
-
-class MyAppTest < Test::Unit::TestCase
-  include Rack::Test::Methods
-
-  def app
-    Sinatra::Application
-  end
+class ServerResponderTest < AppTest
 
   def test_root
     get '/'
@@ -51,33 +38,9 @@ class MyAppTest < Test::Unit::TestCase
   end
 
   def test_authorized_client__signature
-    assert_equal true, true
-  end
-
-  private
-
-  def github_payload
-    {:payload => {
-        :repository => {
-          :url => 'https://github.com/danmayer/server_responder',
-          :name => 'server_responder',
-          :owner => {
-            :name => 'danmayer'
-          }
-        },
-        :after => 'commit_hash'
-      }.to_json,
-      :api_token =>  ENV['SERVER_RESPONDER_API_KEY']
-    }
-  end
-
-  def script_payload
-    {:payload => {
-        :script_payload => 'puts (5+4)',
-        :results_location => 'location'
-      }.to_json,
-      :api_token =>  ENV['SERVER_RESPONDER_API_KEY']
-    }
+    app.stubs(:code_signature).returns('sig')
+    app.stubs(:params).returns({'signature' => 'sig', 'payload' => {'script_payload' => 'script'}.to_json})
+    assert_equal true, app.authorized_client?
   end
 
 end

@@ -1,4 +1,4 @@
-FROM howareyou/ruby:2.0.0-p247
+FROM localhost:5000/deals_base
 
 RUN apt-get update
 RUN apt-get install -y git
