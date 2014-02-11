@@ -43,4 +43,18 @@ class ServerResponderTest < AppTest
     assert_equal true, app.authorized_client?
   end
 
+  def test_default_local_location__nothing_set
+    assert_equal "/opt/bitnami/apps/projects/", app.default_local_location
+  end
+  
+  def test_default_local_location__env_set
+    previous_setting = ENV['LOCAL_REPOS']
+    begin
+      ENV['LOCAL_REPOS'] = 'test'
+      assert_equal "test", app.default_local_location
+    ensure
+      ENV['LOCAL_REPOS'] = previous_setting
+    end
+  end
+
 end
