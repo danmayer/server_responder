@@ -43,11 +43,13 @@ configure :production do
   set :raise_errors, true
 end
 
-logger ||= if ENV['LOGGER_HOST']
-             logger = LogStashLogger.new(ENV['LOGGER_HOST'], 49175, :tcp)
-           else
-             Logger.new("sinatra.log")
-           end
+def logger
+  @@logger ||= if ENV['LOGGER_HOST'] && ENV['RACK_ENV']!='test'
+               LogStashLogger.new(ENV['LOGGER_HOST'], 49175, :tcp)
+               else
+                 Logger.new("sinatra.log")
+               end
+end
 
 helpers do
   def protected!
@@ -142,7 +144,6 @@ def process_script_payload(push)
     results
   end
 end
-
 
 def process_request
   record_params

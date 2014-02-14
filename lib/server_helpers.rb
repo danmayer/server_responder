@@ -14,7 +14,7 @@ module ServerHelpers
 
   def last_push_request
     if @@tmp_request
-      last_push = tmp_request
+      last_push = @@tmp_request
       last_push = last_push.gsub(/api_token.*:\"#{ENV['SERVER_RESPONDER_API_KEY']}\",/,'api_token":"***",')
     end
   end
@@ -35,7 +35,7 @@ module ServerHelpers
     FileUtils.rm_rf('./artifacts', :secure => false)
     Dir.mkdir('./artifacts') unless File.exists?('./artifacts')
     artifact_files = Dir.glob("./artifacts/*")
-    puts "files after clearing: #{artifact_files.inspect}"
+    logger.info "files after clearing: #{artifact_files.inspect}"
   end
 
   def default_local_location
