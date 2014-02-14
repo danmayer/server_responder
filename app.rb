@@ -45,7 +45,7 @@ end
 
 def logger
   @@logger ||= if ENV['LOGGER_HOST'] && ENV['RACK_ENV']!='test'
-               LogStashLogger.new(ENV['LOGGER_HOST'], 49175, :tcp)
+                 LogStashLogger.new(ENV['LOGGER_HOST'], 49175, :tcp)
                else
                  Logger.new("sinatra.log")
                end
