@@ -12,6 +12,11 @@ task :test do
   Dir["test/**/*.rb"].sort.each { |test|  load test }
 end
 
+desc "generate swagger docs"
+task :swagger do
+  system 'bundle exec source2swagger -f app.rb -c "##~" -o public/api'
+end
+
 desc "clear old files, wiping out old S3 files, no longer needed"
 task :cleanup_cache do
   include ServerFiles

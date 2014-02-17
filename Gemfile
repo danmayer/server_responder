@@ -11,6 +11,8 @@ gem 'i18n'
 gem 'active_support'
 gem 'airbrake'
 gem 'logstash-logger'
+gem 'source2swagger'
+gem "sinatra-cross_origin"
 
 group :development, :test do
   gem 'rack-test'

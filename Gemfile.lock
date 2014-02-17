@@ -98,7 +98,10 @@ GEM
       rack (~> 1.3, >= 1.3.6)
       rack-protection (~> 1.2)
       tilt (~> 1.3, >= 1.3.3)
+    sinatra-cross_origin (0.3.2)
     slop (3.3.3)
+    source2swagger (0.0.2)
+      json
     systemu (2.5.2)
     thin (1.5.0)
       daemons (>= 1.0.9)
@@ -130,5 +133,7 @@ DEPENDENCIES
   rest-client
   shotgun
   sinatra
+  sinatra-cross_origin
+  source2swagger
   systemu
   thin

@@ -7,12 +7,14 @@ require 'systemu'
 require 'active_support/core_ext'
 require 'airbrake'
 require 'logstash-logger'
+require 'sinatra/cross_origin'
 
 require './lib/server_files'
 require './lib/server_helpers'
 require './lib/project_commands'
 require './lib/code-signing'
 require './lib/rack_catcher'
+require './lib/swagger_handlers'
 
 include CodeSigning
 include ServerFiles
@@ -66,6 +68,21 @@ helpers do
 end
 
 before { protected! if request.path_info == "/admin" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
+
+include SwaggerHandlers
+## swaggerBase = "http://localhost:9292"
+##~ root = source2swagger.namespace("api-docs")
+##~ root.swaggerVersion = "1.2"
+##~ root.apiVersion = "1.0"
+##~ root.info = {title: "Server Responder API", description: "This api generates responses from a given project using a throw away server.", termsOfServiceUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt", contact: "danmayer@gmail.com", license: "MIT", licenseUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt"}
+##~ root.apis.add :path => "/api", :description => "Generic Server Responder Api"
+
+##~ s = source2swagger.namespace("ServerResponder")
+##~ s.basePath =  swaggerBase
+##~ s.swaggerVersion = "1.2"
+##~ s.apiVersion = "1.0"
+##~ s.produces = ["application/json"]
+##~ s.resourcePath = "/index"
 
 get '/' do
   erb :index
