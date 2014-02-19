@@ -70,12 +70,12 @@ end
 before { protected! if request.path_info == "/admin" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
 include SwaggerHandlers
-## swaggerBase = "http://localhost:9292"
+##~ swaggerBase = "http://localhost:9292"
 ##~ root = source2swagger.namespace("api-docs")
 ##~ root.swaggerVersion = "1.2"
 ##~ root.apiVersion = "1.0"
 ##~ root.info = {title: "Server Responder API", description: "This api generates responses from a given project using a throw away server.", termsOfServiceUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt", contact: "danmayer@gmail.com", license: "MIT", licenseUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt"}
-##~ root.apis.add :path => "/api", :description => "Generic Server Responder Api"
+##~ root.apis.add :path => "/ServerResponder", :description => "Generic Server Responder Api"
 
 ##~ s = source2swagger.namespace("ServerResponder")
 ##~ s.basePath =  swaggerBase
