@@ -1,4 +1,4 @@
-FROM localhost:5000/ruby_base
+FROM danmayer/ruby_base
 
 ADD ./ /var/apps/server_responder
 
