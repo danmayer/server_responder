@@ -69,20 +69,37 @@ end
 
 before { protected! if request.path_info == "/admin" && request.request_method == "GET" && ENV['RACK_ENV']!='test' }
 
-include SwaggerHandlers
 ##~ swaggerBase = "http://localhost:9292"
 ##~ root = source2swagger.namespace("api-docs")
 ##~ root.swaggerVersion = "1.2"
 ##~ root.apiVersion = "1.0"
-##~ root.info = {title: "Server Responder API", description: "This api generates responses from a given project using a throw away server.", termsOfServiceUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt", contact: "danmayer@gmail.com", license: "MIT", licenseUrl: "https://raw2.github.com/danmayer/churn-site/master/license.txt"}
-##~ root.apis.add :path => "/ServerResponder", :description => "Generic Server Responder Api"
+##~ root.info = {title: "Server Responder API", description: "This api generates responses from a given project using a throw away server.", termsOfServiceUrl: "https://github.com/danmayer/server_responder/blob/master/license.txt", contact: "danmayer@gmail.com", license: "MIT", licenseUrl: "https://github.com/danmayer/server_responder/blob/master/license.txt"}
+##~ root.apis.add :path => "/serverresponder", :description => "Generic Server Responder Api"
 
-##~ s = source2swagger.namespace("ServerResponder")
+##~ s = source2swagger.namespace("serverresponder")
 ##~ s.basePath =  swaggerBase
 ##~ s.swaggerVersion = "1.2"
 ##~ s.apiVersion = "1.0"
 ##~ s.produces = ["application/json"]
 ##~ s.resourcePath = "/index"
+
+## models
+##~ s.models["Service"] = {:id => "Service", :properties => {:name => {:type => "string"}, :project_url => {:type => "string"}}}
+include SwaggerHandlers
+
+##~ a = s.apis.add
+##~ a.set :path => "/index", :produces => ["application/json"], :description => "Collection of available services"
+##
+##~ op = a.operations.add
+##~ op.type = "array"
+##~ op.items = { "$ref" => "Service"}
+##
+##~ op.set :method => "GET", :summary => "Returns all available services.", :deprecated => false, :nickname => "list"
+##~ op.summary = "Returns a list of all the available services"
+
+get '/index' do
+  [].to_json
+end
 
 get '/' do
   erb :index

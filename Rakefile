@@ -14,7 +14,7 @@ end
 
 desc "generate swagger docs"
 task :swagger do
-  system 'bundle exec source2swagger -f app.rb -c "##~" -o public/api'
+  system 'bundle exec source2swagger -i ./ -e "rb" -c "##~" -o public/api'
 end
 
 desc "clear old files, wiping out old S3 files, no longer needed"

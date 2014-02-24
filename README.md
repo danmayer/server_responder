@@ -14,6 +14,12 @@ __To Run Locally__
 `bundle exec rackup -p 3000` or  
 `foreman start`
 
+### Churn as use case
+
+### Script Runner as use case
+
+	
+
 __Example Github Data Received__  
   
   * [example push data](https://help.github.com/articles/post-receive-hooks)
@@ -21,6 +27,7 @@ __Example Github Data Received__
 
 __TODO__
 
+  * possibly better integration with docker, or perhaps projects should use docker directly?
   * much improved testing, refactor project and project commands and make a git class
   * a way to protect environment variables needed for S3 or a safe way to have one user drop to another which writes to S3 (possibly server responder is dumb and hits deferred-server to handle S3 file writes / reads)
   * a way to run one of these locally opposed to on EC2, perhaps vagrant setup?
