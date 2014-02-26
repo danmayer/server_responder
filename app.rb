@@ -85,6 +85,7 @@ before { protected! if request.path_info == "/admin" && request.request_method =
 
 ## models
 ##~ s.models["Service"] = {:id => "Service", :properties => {:name => {:type => "string"}, :project_url => {:type => "string"}}}
+##~ s.models["LastJob"] = {:id => "LastJob", :properties => {:last_time => {:type => "string"}}}
 include SwaggerHandlers
 
 ##~ a = s.apis.add
@@ -96,7 +97,6 @@ include SwaggerHandlers
 ##
 ##~ op.set :method => "GET", :summary => "Returns all available services.", :deprecated => false, :nickname => "list"
 ##~ op.summary = "Returns a list of all the available services"
-
 get '/index' do
   [].to_json
 end
@@ -114,6 +114,15 @@ end
 get '/example' do
   erb :example
 end
+
+##~ a = s.apis.add
+##~ a.set :path => "/last_job", :produces => ["application/json"], :description => "The time the last job was completed on this server responder instance"
+##
+##~ op = a.operations.add
+##~ op.type = "LastJob"
+##
+##~ op.set :method => "GET", :summary => "Returns the time the last job was completed", :deprecated => false, :nickname => "last_job"
+##~ op.summary = "Returns the time the last job was completed"
 
 get '/last_job' do
   {:last_time => last_job_time}.to_json
