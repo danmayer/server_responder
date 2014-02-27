@@ -123,7 +123,6 @@ end
 ##
 ##~ op.set :method => "GET", :summary => "Returns the time the last job was completed", :deprecated => false, :nickname => "last_job"
 ##~ op.summary = "Returns the time the last job was completed"
-
 get '/last_job' do
   {:last_time => last_job_time}.to_json
 end
@@ -187,6 +186,15 @@ def process_script_payload(push)
     results
   end
 end
+
+##~ a = s.apis.add
+##~ a.set :path => "/process/script", :produces => ["application/json"], :description => "This processes the rubyscript and returns the results as well as stores assets"
+##
+##~ op = a.operations.add
+##~ op.type = "String"
+##
+##~ op.set :method => "POST", :summary => "This processes the rubyscript and returns the results as well as stores assets", :deprecated => false, :nickname => "process_script"
+##~ op.summary = "This processes the rubyscript and returns the results as well as stores assets"
 
 def process_request
   record_params
