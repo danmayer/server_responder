@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+
+require 'jenkins_api_client'
+
+CI_PROJECT_NAME = "server_responder"
+
+@client = JenkinsApi::Client.new(:server_ip => 'http://utils.picoappz.com/',
+                                 :server_port => '80',
+                                 :username => 'somename',
+                                 :password => 'secret password')
+
+
+def build_deals_ci_job
+  @client.job.create_freestyle(
+                               :name => CI_PROJECT_NAME,
+                               :keep_dependencies => true,
+                               :concurrent_build => false,
+                               :scm_provider => "git",
+                               :scm_url => "https://github.com/danmayer/server_responder.git",
+                               :scm_branch => "master",
+                               :shell_command => <<-eos
+service=$JOB_NAME
+service_port=8999
+branch=$(echo $GIT_BRANCH | cut -d/ -f 2)
+
+docker build -t $service:$branch $WORKSPACE
+
+# how to stop the currently running docker
+[ -z "$(docker ps | grep .*server_responder | awk '{print $1;}')"] || docker stop $(docker ps | grep .*server_responder | awk '{print $1;}')
+
+container_id=$(docker run -d -p $service_port:$service_port $service:$branch)
+
+#container_port=$(docker inspect $container_id | awk 'BEGIN { FS = "\"" } ; /"'$service_port'":/ { print $4 }')
+
+echo "App running on http://localhost:$service_port"
+eos
+                               )
+end
+
+### find all jobs
+jobs = @client.job.list(".")
+puts "found jobs: #{jobs.inspect}"
+
+unless jobs.include?(CI_PROJECT_NAME)
+  build_deals_ci_job
+end
+
+deals_ci_job = @client.job.list(CI_PROJECT_NAME).first
+
+code = @client.job.build(deals_ci_job)
+raise "Could not build the job specified" unless code != 201
+
+# unfortunately exec cli fails for me
+# puts @client.exec_cli("version")
